@@ -68,11 +68,21 @@ The extractor will be developed and tested before Snowflake modeling begins.
 
 ## 5. Repository structure
 
+The current repository is intentionally minimal:
+
 ```text
-global-trade-analytics/
+european-services-analytics-pipeline/
+├── docs/
+└── README.md
+```
+
+The planned implementation structure is:
+
+```text
+european-services-analytics-pipeline/
 ├── .devcontainer/
 ├── .github/workflows/
-├── ingestion/fivetran_connector/
+├── src/extract/eurostat/
 ├── dbt/
 ├── infrastructure/
 ├── scripts/
@@ -82,7 +92,7 @@ global-trade-analytics/
 └── README.md
 ```
 
-The exact contents of each directory will be created incrementally.
+Implementation directories will be added incrementally as each pipeline area is built.
 
 ## 6. Development and delivery standards
 
