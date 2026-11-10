@@ -5,7 +5,7 @@ import pytest
 from extract.eurostat.client import build_data_url
 from extract.eurostat.config import load_extractor_config
 from extract.eurostat.extractor import _configured_years
-from extract.eurostat.validation import ValidationError, validate_csv
+from extract.eurostat.validation import EmptyPartitionError, ValidationError, validate_csv
 
 ROOT = Path(__file__).parents[1]
 
@@ -69,4 +69,17 @@ def test_validate_csv_rejects_invalid_values(tmp_path: Path) -> None:
     )
 
     with pytest.raises(ValidationError, match="non-numeric OBS_VALUE"):
+        validate_csv(path, dataset)
+
+
+def test_validate_csv_identifies_empty_partition(tmp_path: Path) -> None:
+    config = load_extractor_config(ROOT / "config" / "datasets.yaml")
+    dataset = config.datasets["bop_its6_det"]
+    path = tmp_path / "bop_its6_det.csv"
+    path.write_text(
+        "freq,currency,bop_item,stk_flow,partner,geo,TIME_PERIOD,OBS_VALUE\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(EmptyPartitionError, match="contains no data rows"):
         validate_csv(path, dataset)

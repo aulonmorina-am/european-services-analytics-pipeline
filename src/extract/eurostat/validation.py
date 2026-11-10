@@ -12,6 +12,10 @@ class ValidationError(ValueError):
     """Raised when a downloaded dataset fails validation."""
 
 
+class EmptyPartitionError(ValidationError):
+    """Raised when a valid partition response contains no data rows."""
+
+
 @dataclass(frozen=True)
 class ValidationResult:
     checksum: str
@@ -58,7 +62,7 @@ def validate_csv(path: Path, dataset: DatasetConfig) -> ValidationResult:
                     ) from exc
 
         if row_count == 0:
-            raise ValidationError(f"{dataset.code} contains no data rows.")
+            raise EmptyPartitionError(f"{dataset.code} contains no data rows.")
         _validate_periods(dataset, periods)
 
     return ValidationResult(

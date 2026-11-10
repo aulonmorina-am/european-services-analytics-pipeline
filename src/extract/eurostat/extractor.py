@@ -10,7 +10,7 @@ from .client import EurostatClient
 from .config import get_dataset, load_adls_config, load_extractor_config
 from .manifest import write_manifest
 from .models import ExtractionRequest
-from .validation import validate_csv
+from .validation import EmptyPartitionError, validate_csv
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +73,16 @@ def _run_dataset(
             data_path,
             partition_value=request.partition_value,
         )
-        validation = validate_csv(data_path, dataset)
+        try:
+            validation = validate_csv(data_path, dataset)
+        except EmptyPartitionError:
+            logger.info(
+                "dataset_partition_empty dataset=%s year=%d partition=%s",
+                dataset.code,
+                request.run_year,
+                request.partition_value,
+            )
+            return
         write_manifest(
             manifest_path,
             dataset=dataset,
