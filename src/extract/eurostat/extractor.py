@@ -35,8 +35,14 @@ def run(
                 start_period=str(year),
                 end_period=str(year),
             )
-            request = ExtractionRequest(dataset=annual_dataset, run_year=year)
-            _run_dataset(request, client, adls_writer)
+            partitions = dataset.partition_values or (None,)
+            for partition_value in partitions:
+                request = ExtractionRequest(
+                    dataset=annual_dataset,
+                    run_year=year,
+                    partition_value=partition_value,
+                )
+                _run_dataset(request, client, adls_writer)
 
 
 def _configured_years(dataset) -> tuple[int, ...]:
@@ -62,13 +68,18 @@ def _run_dataset(
         manifest_path = Path(directory) / f"{dataset.code}.manifest.json"
 
         logger.info("dataset_download_started dataset=%s", dataset.code)
-        source_url = client.download(dataset, data_path)
+        source_url = client.download(
+            dataset,
+            data_path,
+            partition_value=request.partition_value,
+        )
         validation = validate_csv(data_path, dataset)
         write_manifest(
             manifest_path,
             dataset=dataset,
             source_url=source_url,
             validation=validation,
+            partition_value=request.partition_value,
         )
         data_adls_path, manifest_adls_path = adls_writer.upload(
             data_path,
@@ -76,6 +87,7 @@ def _run_dataset(
             run_year=request.run_year,
             checksum=validation.checksum,
             manifest_path=manifest_path,
+            partition_value=request.partition_value,
         )
         logger.info(
             "dataset_published dataset=%s rows=%d bytes=%d data_path=%s manifest_path=%s",

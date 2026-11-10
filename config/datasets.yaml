@@ -4,33 +4,174 @@ datasets:
     endpoint: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data
     format: SDMX-CSV
     start_period: "2022"
-    end_period: "2025"
+    end_period: "2024"
     filters: {}
-    required_columns: [FREQ, REF_AREA, TIME_PERIOD, OBS_VALUE]
+    key_dimensions: [freq, currency, bop_item, stk_flow, partner, geo]
+    partition_dimension: geo
+    partition_values:
+      - EU27_2020
+      - BE
+      - BG
+      - CZ
+      - DK
+      - DE
+      - EE
+      - IE
+      - EL
+      - ES
+      - FR
+      - HR
+      - IT
+      - CY
+      - LV
+      - LT
+      - LU
+      - HU
+      - MT
+      - NL
+      - AT
+      - PL
+      - PT
+      - RO
+      - SI
+      - SK
+      - FI
+      - SE
+      - IS
+      - "NO"
+      - CH
+      - UK
+      - BA
+      - ME
+      - MK
+      - AL
+      - RS
+      - TR
+      - XK
+    required_columns: [freq, currency, bop_item, stk_flow, partner, geo, TIME_PERIOD, OBS_VALUE]
 
   ext_stec01:
     description: Trade in services by enterprise size
     endpoint: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data
     format: SDMX-CSV
     start_period: "2022"
-    end_period: "2025"
+    end_period: "2024"
     filters: {}
-    required_columns: [FREQ, REF_AREA, TIME_PERIOD, OBS_VALUE]
+    key_dimensions: [freq, unit, sizeclas, stk_flow, nace_r2, partner, geo]
+    partition_dimension: geo
+    partition_values:
+      - EU27_2020
+      - BE
+      - BG
+      - CZ
+      - DK
+      - DE
+      - EE
+      - IE
+      - EL
+      - ES
+      - FR
+      - HR
+      - IT
+      - CY
+      - LV
+      - LT
+      - LU
+      - HU
+      - MT
+      - NL
+      - AT
+      - PL
+      - PT
+      - RO
+      - SI
+      - SK
+      - FI
+      - SE
+      - IS
+      - "NO"
+    required_columns: [freq, unit, sizeclas, stk_flow, nace_r2, partner, geo, TIME_PERIOD, OBS_VALUE]
 
   ext_stec02:
     description: Trade in services by service category and economic activity
     endpoint: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data
     format: SDMX-CSV
     start_period: "2022"
-    end_period: "2025"
+    end_period: "2024"
     filters: {}
-    required_columns: [FREQ, REF_AREA, TIME_PERIOD, OBS_VALUE]
+    key_dimensions: [freq, unit, ebops2010, stk_flow, nace_r2, partner, geo]
+    partition_dimension: geo
+    partition_values:
+      - EU27_2020
+      - BE
+      - BG
+      - CZ
+      - DK
+      - DE
+      - EE
+      - IE
+      - EL
+      - ES
+      - FR
+      - HR
+      - IT
+      - CY
+      - LV
+      - LT
+      - LU
+      - HU
+      - MT
+      - NL
+      - AT
+      - PL
+      - PT
+      - RO
+      - SI
+      - SK
+      - FI
+      - SE
+      - IS
+      - "NO"
+    required_columns: [freq, unit, ebops2010, stk_flow, nace_r2, partner, geo, TIME_PERIOD, OBS_VALUE]
 
   ext_stec03:
     description: Trade in services by economic activity and ownership
     endpoint: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data
     format: SDMX-CSV
     start_period: "2022"
-    end_period: "2025"
+    end_period: "2024"
     filters: {}
-    required_columns: [FREQ, REF_AREA, TIME_PERIOD, OBS_VALUE]
+    key_dimensions: [freq, unit, enterpr, stk_flow, nace_r2, partner, geo]
+    partition_dimension: geo
+    partition_values:
+      - EU27_2020
+      - BE
+      - BG
+      - CZ
+      - DK
+      - DE
+      - EE
+      - IE
+      - EL
+      - ES
+      - FR
+      - HR
+      - IT
+      - CY
+      - LV
+      - LT
+      - LU
+      - HU
+      - MT
+      - NL
+      - AT
+      - PL
+      - PT
+      - RO
+      - SI
+      - SK
+      - FI
+      - SE
+      - IS
+      - "NO"
+    required_columns: [freq, unit, enterpr, stk_flow, nace_r2, partner, geo, TIME_PERIOD, OBS_VALUE]

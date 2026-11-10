@@ -20,23 +20,25 @@ def test_dataset_configuration_contains_required_sources() -> None:
         "ext_stec03",
     }
     assert config.datasets["bop_its6_det"].start_period == "2022"
-    assert config.datasets["bop_its6_det"].end_period == "2025"
+    assert config.datasets["bop_its6_det"].end_period == "2024"
     assert config.datasets["ext_stec01"].start_period == "2022"
-    assert config.datasets["ext_stec01"].end_period == "2025"
-    assert config.datasets["ext_stec02"].end_period == "2025"
-    assert config.datasets["ext_stec03"].end_period == "2025"
-    assert _configured_years(config.datasets["bop_its6_det"]) == (2022, 2023, 2024, 2025)
+    assert config.datasets["ext_stec01"].end_period == "2024"
+    assert config.datasets["ext_stec02"].end_period == "2024"
+    assert config.datasets["ext_stec03"].end_period == "2024"
+    assert _configured_years(config.datasets["bop_its6_det"]) == (2022, 2023, 2024)
 
 
 def test_build_data_url_uses_sdmx_csv_and_periods() -> None:
     config = load_extractor_config(ROOT / "config" / "datasets.yaml")
 
-    url = build_data_url(config.datasets["bop_its6_det"])
+    url = build_data_url(config.datasets["bop_its6_det"], partition_value="DE")
 
     assert "bop_its6_det" in url
+    assert "/bop_its6_det/.....DE?" in url
     assert "format=SDMX-CSV" in url
+    assert "detail=dataonly" in url
     assert "startPeriod=2022" in url
-    assert "endPeriod=2025" in url
+    assert "endPeriod=2024" in url
 
 
 def test_validate_csv_checks_columns_values_and_periods(tmp_path: Path) -> None:
@@ -44,7 +46,8 @@ def test_validate_csv_checks_columns_values_and_periods(tmp_path: Path) -> None:
     dataset = config.datasets["bop_its6_det"]
     path = tmp_path / "bop_its6_det.csv"
     path.write_text(
-        "FREQ,REF_AREA,TIME_PERIOD,OBS_VALUE\nA,DE,2023,123.4\n",
+        "freq,currency,bop_item,stk_flow,partner,geo,TIME_PERIOD,OBS_VALUE\n"
+        "A,MIO_EUR,SERV,EXP,US,DE,2023,123.4\n",
         encoding="utf-8",
     )
 
@@ -60,7 +63,8 @@ def test_validate_csv_rejects_invalid_values(tmp_path: Path) -> None:
     dataset = config.datasets["bop_its6_det"]
     path = tmp_path / "bop_its6_det.csv"
     path.write_text(
-        "FREQ,REF_AREA,TIME_PERIOD,OBS_VALUE\nA,DE,2023,not-a-number\n",
+        "freq,currency,bop_item,stk_flow,partner,geo,TIME_PERIOD,OBS_VALUE\n"
+        "A,MIO_EUR,SERV,EXP,US,DE,2023,not-a-number\n",
         encoding="utf-8",
     )
 

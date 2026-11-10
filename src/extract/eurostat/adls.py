@@ -25,9 +25,11 @@ class AdlsWriter:
         run_year: int,
         checksum: str,
         manifest_path: Path,
+        partition_value: str | None = None,
     ) -> tuple[str, str]:
         prefix = f"{self.root_path}/{dataset.code}/year={run_year}"
-        stem = f"{dataset.code}_{checksum[:16]}"
+        partition_suffix = f"_{partition_value}" if partition_value else ""
+        stem = f"{dataset.code}{partition_suffix}_{checksum}"
         data_path = f"{prefix}/{stem}.csv"
         manifest_adls_path = f"{prefix}/{stem}.manifest.json"
 

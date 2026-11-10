@@ -70,6 +70,9 @@ def _parse_dataset(code: str, raw_dataset: dict[str, Any]) -> DatasetConfig:
 
     filters = raw_dataset.get("filters", {})
     required_columns = raw_dataset.get("required_columns", [])
+    key_dimensions = raw_dataset.get("key_dimensions", [])
+    partition_dimension = raw_dataset.get("partition_dimension")
+    partition_values = raw_dataset.get("partition_values", [])
     if not isinstance(filters, dict) or not all(
         isinstance(key, str) and isinstance(value, str) for key, value in filters.items()
     ):
@@ -78,6 +81,20 @@ def _parse_dataset(code: str, raw_dataset: dict[str, Any]) -> DatasetConfig:
         isinstance(column, str) for column in required_columns
     ):
         raise ConfigurationError(f"Dataset '{code}' required_columns must be a list of strings.")
+    if not isinstance(key_dimensions, list) or not all(
+        isinstance(dimension, str) for dimension in key_dimensions
+    ):
+        raise ConfigurationError(f"Dataset '{code}' key_dimensions must be a list of strings.")
+    if partition_dimension is not None and (
+        not isinstance(partition_dimension, str) or partition_dimension not in key_dimensions
+    ):
+        raise ConfigurationError(
+            f"Dataset '{code}' partition_dimension must be present in key_dimensions."
+        )
+    if not isinstance(partition_values, list) or not all(
+        isinstance(value, str) for value in partition_values
+    ):
+        raise ConfigurationError(f"Dataset '{code}' partition_values must be a list of strings.")
 
     return DatasetConfig(
         code=code,
@@ -88,6 +105,9 @@ def _parse_dataset(code: str, raw_dataset: dict[str, Any]) -> DatasetConfig:
         end_period=_optional_string(raw_dataset, "end_period"),
         filters=dict(filters),
         required_columns=tuple(required_columns),
+        key_dimensions=tuple(key_dimensions),
+        partition_dimension=partition_dimension,
+        partition_values=tuple(partition_values),
     )
 
 

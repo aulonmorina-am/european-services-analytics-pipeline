@@ -15,11 +15,13 @@ def write_manifest(
     dataset: DatasetConfig,
     source_url: str,
     validation: ValidationResult,
+    partition_value: str | None = None,
 ) -> None:
     manifest = {
         "dataset": dataset.code,
         "description": dataset.description,
         "source_url": source_url,
+        "partition_value": partition_value,
         "format": dataset.format,
         "start_period": dataset.start_period,
         "end_period": dataset.end_period,

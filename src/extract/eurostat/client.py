@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 
 import requests
 
@@ -31,29 +31,37 @@ class EurostatClient:
         self,
         dataset: DatasetConfig,
         destination: Path,
+        *,
+        partition_value: str | None = None,
     ) -> str:
-        url = build_data_url(dataset)
+        url = build_data_url(dataset, partition_value=partition_value)
         destination.parent.mkdir(parents=True, exist_ok=True)
 
         for attempt in range(1, self.max_attempts + 1):
             try:
                 with self.session.get(
                     url,
-                    headers={"Accept": "text/csv"},
+                    headers={"Accept": "application/vnd.sdmx.data+csv;version=1.0.0"},
                     stream=True,
                     timeout=self.timeout_seconds,
                 ) as response:
                     if response.status_code in {429, 500, 502, 503, 504}:
                         if attempt == self.max_attempts:
-                            raise EurostatRequestError(
-                                f"Eurostat returned HTTP {response.status_code} for {dataset.code}"
+                            detail = response.text[:500].replace("\n", " ")
+                            message = (
+                                f"Eurostat returned HTTP {response.status_code} for "
+                                f"{dataset.code}: {detail}"
                             )
+                            raise EurostatRequestError(message)
                         time.sleep(self.backoff_seconds * (2 ** (attempt - 1)))
                         continue
                     if response.status_code != 200:
-                        raise EurostatRequestError(
-                            f"Eurostat returned HTTP {response.status_code} for {dataset.code}"
+                        detail = response.text[:500].replace("\n", " ")
+                        message = (
+                            f"Eurostat returned HTTP {response.status_code} for "
+                            f"{dataset.code}: {detail}"
                         )
+                        raise EurostatRequestError(message)
 
                     with destination.open("wb") as output:
                         for chunk in response.iter_content(chunk_size=1024 * 1024):
@@ -70,13 +78,25 @@ class EurostatClient:
         raise EurostatRequestError(f"Eurostat request failed for {dataset.code}")
 
 
-def build_data_url(dataset: DatasetConfig) -> str:
-    query: dict[str, str] = {"format": dataset.format}
+def build_data_url(
+    dataset: DatasetConfig,
+    *,
+    partition_value: str | None = None,
+) -> str:
+    query: dict[str, str] = {"format": dataset.format, "detail": "dataonly"}
     if dataset.start_period:
         query["startPeriod"] = dataset.start_period
     if dataset.end_period:
         query["endPeriod"] = dataset.end_period
     query.update(dataset.filters)
 
+    key = ""
+    if dataset.key_dimensions:
+        key_values = [dataset.filters.get(dimension, "") for dimension in dataset.key_dimensions]
+        if dataset.partition_dimension and partition_value is not None:
+            partition_index = dataset.key_dimensions.index(dataset.partition_dimension)
+            key_values[partition_index] = partition_value
+        key = f"/{quote('.'.join(key_values), safe='.+')}"
+
     params = urlencode(query)
-    return f"{dataset.endpoint.rstrip('/')}/{dataset.code}?{params}"
+    return f"{dataset.endpoint.rstrip('/')}/{dataset.code}{key}?{params}"

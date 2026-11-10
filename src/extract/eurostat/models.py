@@ -13,6 +13,9 @@ class DatasetConfig:
     end_period: str | None = None
     filters: dict[str, str] = field(default_factory=dict)
     required_columns: tuple[str, ...] = ()
+    key_dimensions: tuple[str, ...] = ()
+    partition_dimension: str | None = None
+    partition_values: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -31,3 +34,4 @@ class AdlsConfig:
 class ExtractionRequest:
     dataset: DatasetConfig
     run_year: int
+    partition_value: str | None = None
