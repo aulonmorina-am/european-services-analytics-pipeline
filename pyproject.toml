@@ -1,0 +1,45 @@
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "european-services-trade-analytics"
+version = "0.1.0"
+description = "Eurostat international trade in services pipeline: extract to ADLS Gen2, load via Fivetran to Snowflake, transform with dbt."
+requires-python = ">=3.14"
+dependencies = [
+    "requests>=2.32",
+    "azure-storage-file-datalake>=12.17",
+    "azure-identity>=1.17",
+    "snowflake-connector-python>=3.12",
+    "pyyaml>=6.0",
+    "dbt-snowflake>=1.10",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.6",
+    "black>=24.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.uv]
+package = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.black]
+line-length = 100

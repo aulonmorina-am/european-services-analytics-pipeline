@@ -1,146 +1,139 @@
-# European Services Trade Analytics — Architecture Design
+# European Services Trade Analytics — System Design
 
-**Status:** Planning baseline. Implementation starts with the Eurostat extractor.
-
-## 1. Confirmed architecture
+## 1. Architecture
 
 ```text
-Eurostat bulk/API
-        ↓
-Python extractor
-        ↓
-ADLS Gen2
-        ↓
+Eurostat API
+     |
+     v
+Python Extractor
+     |
+     v
+Azure Data Lake Storage Gen2
+     |
+     v
 Fivetran
-        ↓
+     |
+     v
 Snowflake
-        ↓
-dbt
-        ↓
+     |
+     v
+dbt Core
+     |
+     v
+Snowflake Analytics
+     |
+     v
 Power BI
 ```
 
-- **Source:** Eurostat international trade in services datasets.
-- **Ingestion:** Python extractor writing partitioned files to ADLS Gen2, followed by Fivetran.
-- **Warehouse:** Snowflake.
-- **Transformation:** dbt.
-- **BI:** Power BI, to be implemented later.
-- **Development:** Docker Dev Container.
-- **Automation:** GitHub Actions.
+**GitHub Actions** manages pipeline orchestration and CI/CD across the project.
 
-## 2. Snowflake workload separation
+## 2. Technology Stack
 
-The project will use separate warehouses for workload isolation:
+| Technology           | Responsibility                               |
+| -------------------- | -------------------------------------------- |
+| Python               | Eurostat API extraction and ADLS integration |
+| Azure Data Lake Gen2 | Raw data storage                             |
+| Fivetran             | ADLS-to-Snowflake ingestion                  |
+| Snowflake            | Cloud data warehouse                         |
+| dbt Core             | Data transformation and modeling             |
+| GitHub Actions       | Workflow automation and CI/CD                |
+| Power BI             | Analytics and visualization                  |
+| Docker Dev Container | Development environment                      |
 
-| Warehouse      | Workload                  |
+## 3. Snowflake Architecture
+
+Separate warehouses for workload isolation:
+
+| Warehouse      | Responsibility            |
 | -------------- | ------------------------- |
 | `INGEST_WH`    | Fivetran ingestion        |
-| `TRANSFORM_WH` | dbt execution             |
-| `ANALYTICS_WH` | Power BI and read traffic |
+| `TRANSFORM_WH` | dbt transformations       |
+| `ANALYTICS_WH` | BI and analytical queries |
 
-Final sizing and auto-suspend settings will be validated from observed usage.
-
-## 3. Snowflake data zones
-
-The initial data-zone design is:
+Data architecture:
 
 ```text
-RAW → dbt-managed transformation schemas → BI-facing schemas
+RAW → STAGING → INTERMEDIATE → MARTS
 ```
 
-- **RAW:** Data loaded by Fivetran.
-- **Transformation schemas:** Data modeled by dbt.
-- **BI-facing schemas:** Data exposed to Power BI after the model design is approved.
+- **RAW:** Source data ingested through Fivetran.
+- **STAGING:** Source-level transformations.
+- **INTERMEDIATE:** Reusable transformation logic.
+- **MARTS:** Analytical datasets for BI consumption.
 
-Exact schema names, materializations, and retention policies remain to be decided.
+## 4. Data Sources
 
-## 4. Eurostat extraction and ingestion
+Primary source:
 
-The extractor and ingestion flow will:
+- `bop_its6_det` — International trade in services (BPM6).
 
-- Download Eurostat TSV or SDMX data.
-- Validate columns and types, then write partitioned files and a manifest to ADLS Gen2.
-- Handle retries, caching, and sync state.
-- Load the ADLS files into Snowflake through Fivetran.
-- Prevent duplicate records and log failures without exposing credentials.
+Additional datasets:
 
-The extractor will be developed and tested before Snowflake modeling begins.
+- `ext_stec01` — Trade by enterprise size.
+- `ext_stec02` — Trade by enterprise activity.
+- `ext_stec03` — Trade by enterprise ownership.
+- `ext_ser_mos` — Trade by mode of supply.
 
-## 5. Repository structure
+The analytical focus is European international trade in services, particularly computer, telecommunications and information services.
 
-The current repository is intentionally minimal:
+## 5. Pipeline Workflow
+
+GitHub Actions coordinates the execution of the pipeline:
+
+1. Python extracts data from Eurostat.
+2. Extracted files are uploaded to ADLS Gen2.
+3. GitHub Actions triggers Fivetran synchronization.
+4. Fivetran loads data into Snowflake.
+5. GitHub Actions executes dbt.
+6. dbt transforms data within Snowflake.
+7. Power BI consumes the analytical models.
+
+CI/CD workflows independently validate project code and dbt models.
+
+## 6. Repository Structure
 
 ```text
-european-services-analytics-pipeline/
-├── docs/
-└── README.md
-```
-
-The planned implementation structure is:
-
-```text
-european-services-analytics-pipeline/
+european-services-trade-analytics/
 ├── .devcontainer/
-├── .github/workflows/
-├── src/extract/eurostat/
+├── .github/
+│   └── workflows/
+├── src/
+│   └── extract/
+│       └── eurostat/
 ├── dbt/
-├── infrastructure/
 ├── scripts/
+├── tests/
 ├── docs/
 ├── .gitignore
 ├── pyproject.toml
-└── README.md
+├── README.md
+└── system-design.md
 ```
 
-Implementation directories will be added incrementally as each pipeline area is built.
+Directories and implementation files will be introduced as development progresses.
 
-## 6. Development and delivery standards
+## 7. Implementation Sequence
 
-### Dev Container
+1. Python project and Dev Container setup.
+2. Eurostat API client and extractor.
+3. ADLS Gen2 integration.
+4. Fivetran connector configuration.
+5. Snowflake setup and ingestion validation.
+6. dbt project initialization.
+7. Data transformation and modeling.
+8. GitHub Actions orchestration and CI/CD.
+9. Power BI semantic model and dashboards.
 
-The Dev Container will provide a consistent environment for:
+## 8. Engineering Principles
 
-- Python connector development.
-- Fivetran SDK dependencies.
-- dbt and Snowflake adapter tooling.
-- Tests, linting, and formatting.
+- Modular and maintainable implementation.
+- Clear separation of pipeline responsibilities.
+- Reproducible development environment.
+- Version-controlled code and configuration.
+- Automated testing and validation.
+- Secure credential management.
+- Cost-conscious cloud resource usage.
 
-### GitHub Actions
-
-GitHub Actions will eventually validate:
-
-- Python formatting, linting, and unit tests.
-- Fivetran connector packaging.
-- dbt parsing, compilation, and tests.
-- Deployment workflows after the project is implemented.
-
-The workflow details will be defined when each implementation area is added.
-
-## 7. Decisions intentionally deferred
-
-The following are not finalized yet:
-
-- Raw table names and column contracts.
-- Whether raw API payloads are preserved as `VARIANT`.
-- dbt staging, intermediate, and mart model names.
-- Final dimensional or star-schema design.
-- Fact-table grain and unique key.
-- Incremental strategy and clustering keys.
-- Power BI storage mode, relationships, and refresh strategy.
-- Environment and schema naming conventions.
-- Final warehouse sizes and cost thresholds.
-
-These decisions will be made from the actual API response structure and tested data volume rather than assumed in advance.
-
-## 8. Implementation sequence
-
-1. Set up the Python project and Dev Container.
-2. Implement the API client.
-3. Implement pagination and sync state.
-4. Add the Fivetran connector entry point.
-5. Test a small API extraction.
-6. Configure the Snowflake destination.
-7. Inspect and document the loaded source data.
-8. Design the dbt models from the observed data.
-9. Add CI/CD checks.
-10. Design the Power BI model and dashboards.
+Implementation details and technical decisions will be documented as the corresponding components are developed.

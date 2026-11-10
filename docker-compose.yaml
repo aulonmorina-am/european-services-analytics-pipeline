@@ -1,0 +1,17 @@
+services:
+  app:
+    build: .
+    container_name: european-services-analytics
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+      - uv-cache:/root/.cache/uv
+    env_file:
+      - path: .env
+        required: false
+    stdin_open: true
+    tty: true
+    command: bash
+
+volumes:
+  uv-cache:

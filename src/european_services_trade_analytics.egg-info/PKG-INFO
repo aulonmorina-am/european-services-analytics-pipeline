@@ -1,0 +1,16 @@
+Metadata-Version: 2.4
+Name: european-services-trade-analytics
+Version: 0.1.0
+Summary: Eurostat international trade in services pipeline: extract to ADLS Gen2, load via Fivetran to Snowflake, transform with dbt.
+Requires-Python: >=3.14
+Requires-Dist: requests>=2.32
+Requires-Dist: azure-storage-file-datalake>=12.17
+Requires-Dist: azure-identity>=1.17
+Requires-Dist: snowflake-connector-python>=3.12
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: dbt-snowflake>=1.10
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+Requires-Dist: pytest-cov>=5.0; extra == "dev"
+Requires-Dist: ruff>=0.6; extra == "dev"
+Requires-Dist: black>=24.0; extra == "dev"
