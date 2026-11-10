@@ -41,5 +41,6 @@ class AdlsWriter:
         file_client = self.filesystem.get_file_client(adls_path)
         if file_client.exists():
             return
+        file_client.create_file()
         with local_path.open("rb") as input_file:
             file_client.upload_data(input_file, overwrite=False)
