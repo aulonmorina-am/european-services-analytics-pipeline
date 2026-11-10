@@ -1,9 +1,0 @@
-README.md
-pyproject.toml
-src/european_services_trade_analytics.egg-info/PKG-INFO
-src/european_services_trade_analytics.egg-info/SOURCES.txt
-src/european_services_trade_analytics.egg-info/dependency_links.txt
-src/european_services_trade_analytics.egg-info/requires.txt
-src/european_services_trade_analytics.egg-info/top_level.txt
-src/extract/__init__.py
-src/extract/eurostat/__init__.py

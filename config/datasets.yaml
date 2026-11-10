@@ -1,0 +1,36 @@
+datasets:
+  bop_its6_det:
+    description: Core international trade in services by detailed service category
+    endpoint: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data
+    format: SDMX-CSV
+    start_period: "2022"
+    end_period: "2025"
+    filters: {}
+    required_columns: [FREQ, REF_AREA, TIME_PERIOD, OBS_VALUE]
+
+  ext_stec01:
+    description: Trade in services by enterprise size
+    endpoint: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data
+    format: SDMX-CSV
+    start_period: "2022"
+    end_period: "2025"
+    filters: {}
+    required_columns: [FREQ, REF_AREA, TIME_PERIOD, OBS_VALUE]
+
+  ext_stec02:
+    description: Trade in services by service category and economic activity
+    endpoint: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data
+    format: SDMX-CSV
+    start_period: "2022"
+    end_period: "2025"
+    filters: {}
+    required_columns: [FREQ, REF_AREA, TIME_PERIOD, OBS_VALUE]
+
+  ext_stec03:
+    description: Trade in services by economic activity and ownership
+    endpoint: https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data
+    format: SDMX-CSV
+    start_period: "2022"
+    end_period: "2025"
+    filters: {}
+    required_columns: [FREQ, REF_AREA, TIME_PERIOD, OBS_VALUE]
