@@ -1,2 +1,0 @@
-# Fivetran connector SDK — install in its own virtual environment.
-fivetran-connector-sdk>=3.0

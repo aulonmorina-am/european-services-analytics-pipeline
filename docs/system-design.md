@@ -60,7 +60,6 @@ RAW → STAGING → INTERMEDIATE → MARTS
 
 - **RAW:** Source data ingested through Fivetran.
 - **STAGING:** Source-level transformations.
-- **INTERMEDIATE:** Reusable transformation logic.
 - **MARTS:** Analytical datasets for BI consumption.
 
 ## 4. Data Sources
@@ -82,13 +81,11 @@ The analytical focus is European international trade in services, particularly c
 
 GitHub Actions coordinates the execution of the pipeline:
 
-1. Python extracts data from Eurostat.
+1. GitHub Actions (monthly cron or manual dispatch) runs the Python extractor.
 2. Extracted files are uploaded to ADLS Gen2.
-3. GitHub Actions triggers Fivetran synchronization.
-4. Fivetran loads data into Snowflake.
-5. GitHub Actions executes dbt.
-6. dbt transforms data within Snowflake.
-7. Power BI consumes the analytical models.
+3. Fivetran polls ADLS Gen2 on its own schedule (managed Azure Blob Storage connector) and loads new files into Snowflake RAW database.
+4. dbt transforms data within Snowflake.
+5. Power BI consumes the analytical models.
 
 CI/CD workflows independently validate project code and dbt models.
 
@@ -96,9 +93,9 @@ CI/CD workflows independently validate project code and dbt models.
 
 ```text
 european-services-trade-analytics/
-├── .devcontainer/
 ├── .github/
 │   └── workflows/
+├── config/
 ├── src/
 │   └── extract/
 │       └── eurostat/
@@ -106,10 +103,12 @@ european-services-trade-analytics/
 ├── scripts/
 ├── tests/
 ├── docs/
+├── Dockerfile
+├── docker-compose.yaml
 ├── .gitignore
 ├── pyproject.toml
 ├── README.md
-└── system-design.md
+└── uv.lock
 ```
 
 Directories and implementation files will be introduced as development progresses.
@@ -135,5 +134,3 @@ Directories and implementation files will be introduced as development progresse
 - Automated testing and validation.
 - Secure credential management.
 - Cost-conscious cloud resource usage.
-
-Implementation details and technical decisions will be documented as the corresponding components are developed.

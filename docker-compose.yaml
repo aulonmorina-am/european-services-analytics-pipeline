@@ -1,17 +1,28 @@
 services:
-  app:
+  dbt:
     build: .
-    container_name: european-services-analytics
-    working_dir: /workspace
+    working_dir: /workspace/dbt
+
     volumes:
       - .:/workspace
-      - uv-cache:/root/.cache/uv
+
+      # dbt profile
+      - type: bind
+        source: "${USERPROFILE}/.dbt"
+        target: /root/.dbt
+        read_only: true
+
+      # Snowflake private key
+      - type: bind
+        source: "${USERPROFILE}/.snowflake/keys/dbt"
+        target: /run/secrets/dbt
+        read_only: true
+
     env_file:
       - path: .env
         required: false
-    stdin_open: true
-    tty: true
-    command: bash
 
-volumes:
-  uv-cache:
+    environment:
+      DBT_PROFILES_DIR: /root/.dbt
+      DBT_PRIVATE_KEY_PATH: /run/secrets/dbt/rsa_key.p8
+      DBT_PRIVATE_KEY_PASSPHRASE: "${DBT_PRIVATE_KEY_PASSPHRASE:-}"
