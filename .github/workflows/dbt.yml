@@ -1,0 +1,72 @@
+name: dbt
+
+# CI/CD only deploys to production. The dev target (ANALYTICS.DEV_* schemas) is
+# local-only and is never run in CI — see docs/system-design.md.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "dbt/**"
+      - ".github/workflows/dbt.yml"
+      - "pyproject.toml"
+      - "uv.lock"
+  # Manual runs: the job-level `if: github.ref == 'refs/heads/main'` guard ensures
+  # a dispatch on a feature branch never reaches prod.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # Belt and braces: even if the trigger filter is bypassed, only main deploys.
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    env:
+      DBT_PROFILES_DIR: .ci/dbt_profiles
+      DBT_PRIVATE_KEY_PATH: .ci/dbt_rsa_key.p8
+      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+      SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+      DBT_PRIVATE_KEY_PASSPHRASE: ${{ secrets.DBT_PRIVATE_KEY_PASSPHRASE }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Write Snowflake private key
+        run: |
+          mkdir -p "$DBT_PROFILES_DIR"
+          printf '%s' "${{ secrets.DBT_SNOWFLAKE_PRIVATE_KEY }}" > "$DBT_PRIVATE_KEY_PATH"
+          chmod 600 "$DBT_PRIVATE_KEY_PATH"
+
+      - name: Install dbt profile from template
+        run: cp dbt/profiles.example.yml "$DBT_PROFILES_DIR/profiles.yml"
+
+      - name: Build and test models (prod target)
+        run: uv run dbt build --project-dir dbt --target prod
+
+      - name: Generate docs
+        run: uv run dbt docs generate --project-dir dbt --target prod
+
+      # Persist the prod manifest so PR (Slim CI) jobs can diff against it with --state/--defer.
+      - name: Upload prod manifest artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-manifest
+          path: dbt/target/manifest.json
+          retention-days: 30

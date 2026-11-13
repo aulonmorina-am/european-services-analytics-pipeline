@@ -1,0 +1,113 @@
+name: dbt PR (Slim CI)
+
+# Lightweight PR gate: lint + unit tests + dbt parse, then a Slim CI build that
+# only builds models changed in the PR plus their downstream dependents
+# (--select state:modified+ --defer --state <prod manifest>). Runs on the dev
+# target, so it materializes into ANALYTICS.DEV_* schemas and never touches prod.
+on:
+  pull_request:
+    paths:
+      - "dbt/**"
+      - ".github/workflows/dbt-pr.yml"
+      - "pyproject.toml"
+      - "uv.lock"
+      - "src/**"
+      - "tests/**"
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: read  # needed to download the prod-manifest artifact from the dbt.yml run on main
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Format check
+        run: uv run black --check .
+
+      - name: Unit tests
+        run: uv run pytest
+
+  slim-ci:
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    env:
+      DBT_PROFILES_DIR: .ci/dbt_profiles
+      DBT_PRIVATE_KEY_PATH: .ci/dbt_rsa_key.p8
+      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+      SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+      DBT_PRIVATE_KEY_PASSPHRASE: ${{ secrets.DBT_PRIVATE_KEY_PASSPHRASE }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Write Snowflake private key
+        run: |
+          mkdir -p "$DBT_PROFILES_DIR"
+          printf '%s' "${{ secrets.DBT_SNOWFLAKE_PRIVATE_KEY }}" > "$DBT_PRIVATE_KEY_PATH"
+          chmod 600 "$DBT_PRIVATE_KEY_PATH"
+
+      - name: Install dbt profile from template
+        run: cp dbt/profiles.example.yml "$DBT_PROFILES_DIR/profiles.yml"
+
+      - name: Download prod manifest from main branch (Slim CI state)
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: dbt.yml
+          branch: main
+          name: prod-manifest
+          path: prod_state
+          workflow_conclusion: success
+        continue-on-error: true
+
+      - name: Parse project (no warehouse needed)
+        run: uv run dbt parse --project-dir dbt --target dev
+
+      # Slim CI: build only what changed in this PR + downstream. --defer resolves
+      # unchanged upstream refs against prod (read-only); --target dev writes the
+      # selected models into DEV_* schemas. If no prod manifest exists yet (first
+      # PRs), fall back to a full dev-target build.
+      - name: Slim CI build (changed models + downstream, dev target)
+        run: |
+          if [ -f prod_state/manifest.json ]; then
+            uv run dbt build --project-dir dbt --target dev \
+              --select state:modified+ --defer --state prod_state
+          else
+            echo "No prod manifest yet - running full build on dev target"
+            uv run dbt build --project-dir dbt --target dev
+          fi
