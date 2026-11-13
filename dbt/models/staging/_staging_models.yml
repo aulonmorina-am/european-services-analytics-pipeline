@@ -1,0 +1,86 @@
+version: 2
+
+models:
+  - name: stg_bop_its_6_det
+    description: "Staging model for Eurostat Balance of Payments international trade in services."
+
+    columns:
+      - name: frequency
+        description: "Frequency of the observation."
+        data_tests: [not_null]
+
+      - name: currency
+        description: "Currency and measurement unit."
+        data_tests: [not_null]
+
+      - name: bop_item
+        description: "Balance of Payments service classification."
+        data_tests: [not_null]
+
+      - name: bop_flow
+        description: "Balance of Payments flow classification."
+        data_tests: [not_null]
+
+      - name: partner
+        description: "Partner country or geographical area."
+        data_tests: [not_null]
+
+      - name: geo
+        description: "Reporting geographical area."
+        data_tests: [not_null]
+
+      - name: time_period
+        description: "Reference period of the observation."
+        data_tests: [not_null]
+
+      - name: last_update
+        description: "Eurostat dataset update timestamp."
+        data_tests: [not_null]
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - frequency
+              - currency
+              - bop_item
+              - bop_flow
+              - partner
+              - geo
+              - time_period
+
+  - name: stg_ext_stec_01
+    description: "Staging model for Eurostat services trade by NACE activity and enterprise size class."
+
+    columns:
+      - name: geo
+        description: "Reporting geographical area."
+        data_tests: [not_null]
+
+      - name: time_period
+        description: "Reference period of the observation."
+        data_tests: [not_null]
+
+  - name: stg_ext_stec_02
+    description: "Staging model for Eurostat services tradeby NACE activity and EBOPS 2010 service product."
+
+    columns:
+      - name: geo
+        description: "Reporting geographical area."
+        data_tests: [not_null]
+
+      - name: time_period
+        description: "Reference period of the observation."
+        data_tests: [not_null]
+
+  - name: stg_ext_stec_03
+    description: " Staging model for Eurostat services trade by NACE activity and enterprise control."
+
+    columns:
+      - name: geo
+        description: "Reporting geographical area."
+        data_tests: [not_null]
+
+      - name: time_period
+        description: "Reference period of the observation."
+        data_tests: [not_null]

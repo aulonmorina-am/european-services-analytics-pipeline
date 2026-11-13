@@ -67,10 +67,10 @@ RAW → STAGING → INTERMEDIATE → MARTS
 dbt runs against two targets defined in the profile (template `dbt/profiles.example.yml`,
 copied to `~/.dbt/profiles.yml` on the host; all secrets via environment variables):
 
-| Target | Warehouse      | Schemas written in `ANALYTICS`                 | Used by                                   |
-| ------ | -------------- | ---------------------------------------------- | ----------------------------------------- |
-| `dev`  | `DEV_WH`       | `dev_staging`, `dev_intermediate`, `dev_marts` | local development only (default target)   |
-| `prod` | `TRANSFORM_WH` | `staging`, `intermediate`, `marts`             | CI/CD on merge to `main` only             |
+| Target | Warehouse      | Schemas written in `ANALYTICS`                 | Used by                                 |
+| ------ | -------------- | ---------------------------------------------- | --------------------------------------- |
+| `dev`  | `TRANSFORM_WH` | `dev_staging`, `dev_intermediate`, `dev_marts` | local development only (default target) |
+| `prod` | `TRANSFORM_WH` | `staging`, `intermediate`, `marts`             | CI/CD on merge to `main` only           |
 
 - `dev` is the default target (`target: dev` in the profile), so a plain `dbt build` in the
   container can never write the prod schemas.

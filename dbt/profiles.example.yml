@@ -18,8 +18,8 @@ european_services_analytics:
       # Defaults to the path bind-mounted by docker-compose; override via env when running outside the container.
       private_key_path: "{{ env_var('DBT_PRIVATE_KEY_PATH', '/run/secrets/dbt/rsa_key.p8') }}"
       private_key_passphrase: "{{ env_var('DBT_PRIVATE_KEY_PASSPHRASE', '') }}"
-      database: ANALYTICS
-      warehouse: DEV_WH
+      database: EUROPEAN_SERVICES_ANALYTICS
+      warehouse: TRANSFORM_WH
       schema: DEV
       threads: 4
     prod:
@@ -29,7 +29,7 @@ european_services_analytics:
       role: "{{ env_var('SNOWFLAKE_ROLE', 'DBT_ROLE') }}"
       private_key_path: "{{ env_var('DBT_PRIVATE_KEY_PATH', '/run/secrets/dbt/rsa_key.p8') }}"
       private_key_passphrase: "{{ env_var('DBT_PRIVATE_KEY_PASSPHRASE', '') }}"
-      database: ANALYTICS
+      database: EUROPEAN_SERVICES_ANALYTICS
       warehouse: TRANSFORM_WH
       schema: MARTS
       threads: 4
