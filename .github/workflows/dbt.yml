@@ -1,7 +1,7 @@
 name: dbt
 
-# CI/CD only deploys to production. The dev target (ANALYTICS.DEV_* schemas) is
-# local-only and is never run in CI — see docs/system-design.md.
+# CI/CD only deploys to production. The dev target (EUROPEAN_SERVICES_ANALYTICS.DEV_*
+# schemas) is local-only and is never run in CI — see docs/system-design.md.
 on:
   push:
     branches: [main]
@@ -13,9 +13,19 @@ on:
   # Manual runs: the job-level `if: github.ref == 'refs/heads/main'` guard ensures
   # a dispatch on a feature branch never reaches prod.
   workflow_dispatch:
+  # Monthly data refresh: extractor runs on the 1st, Fivetran syncs within ~2 days,
+  # dbt rebuilds marts on the 5th. Scheduled runs fire on the default branch, so the
+  # main-only guard below still holds.
+  schedule:
+    - cron: "0 6 5 * *"
 
 permissions:
   contents: read
+
+# Never run two prod deploys concurrently (double push / dispatch+schedule overlap).
+concurrency:
+  group: dbt-prod
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -48,6 +58,12 @@ jobs:
       - name: Install dependencies
         run: uv sync --frozen
 
+      - name: Install dbt packages
+        run: uv run dbt deps --project-dir dbt
+
+      - name: Verify package lockfile
+        run: git diff --exit-code dbt/package-lock.yml
+
       - name: Write Snowflake private key
         run: |
           mkdir -p "$DBT_PROFILES_DIR"
@@ -56,6 +72,10 @@ jobs:
 
       - name: Install dbt profile from template
         run: cp dbt/profiles.example.yml "$DBT_PROFILES_DIR/profiles.yml"
+
+      # Gate: fail the deploy if the RAW sources are stale (dead extractor/Fivetran sync).
+      - name: Check source freshness
+        run: uv run dbt source freshness --project-dir dbt --target prod
 
       - name: Build and test models (prod target)
         run: uv run dbt build --project-dir dbt --target prod
@@ -68,5 +88,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: prod-manifest
-          path: dbt/target/manifest.json
+          path: |
+            dbt/target/manifest.json
+            dbt/target/run_results.json
           retention-days: 30

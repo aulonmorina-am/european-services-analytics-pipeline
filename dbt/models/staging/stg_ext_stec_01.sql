@@ -6,7 +6,7 @@ SELECT
     freq AS frequency,
     unit,
     sizeclas AS enterprise_size_class,
-    stk_flow,
+    stk_flow AS trade_flow,
     nace_r_2,
     partner,
     geo,

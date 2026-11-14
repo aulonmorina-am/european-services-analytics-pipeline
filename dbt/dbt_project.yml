@@ -11,6 +11,7 @@ profile: "european_services_analytics"
 # variable is not configured.
 vars:
   dbt_private_key_path: "{{ env_var('DBT_PRIVATE_KEY_PATH', '') }}"
+  snapshot_schema: "{{ 'dev_snapshots' if target.name == 'dev' else 'snapshots' }}"
 
 # These configurations specify where dbt should look for different types of files.
 # The `model-paths` config, for example, states that models in this project can be

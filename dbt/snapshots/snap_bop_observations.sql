@@ -1,8 +1,9 @@
 {% snapshot snap_bop_observations %}
 
+{# dev target writes DEV_SNAPSHOTS, prod writes SNAPSHOTS (dbt_project.yml vars) #}
 {{
     config(
-        target_schema='snapshots',
+        target_schema=var('snapshot_schema'),
         unique_key='observation_key',
         strategy='check',
         check_cols=['obs_value']

@@ -4,8 +4,9 @@
 #   copy dbt\profiles.example.yml %USERPROFILE%\.dbt\profiles.yml
 #
 # All secrets come from environment variables (.env locally, GitHub secrets in CI).
-# The dev target writes dev_* schemas inside ANALYTICS (see macros/generate_schema_name.sql);
-# only the prod target writes the real staging/intermediate/marts schemas.
+# The dev target writes dev_* schemas inside EUROPEAN_SERVICES_ANALYTICS (see
+# macros/generate_schema_name.sql); only the prod target writes the real
+# staging/intermediate/marts schemas.
 european_services_analytics:
   # Default target: a plain `dbt build` in the container always hits dev, never prod.
   target: dev

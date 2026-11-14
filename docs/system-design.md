@@ -67,7 +67,7 @@ RAW → STAGING → INTERMEDIATE → MARTS
 dbt runs against two targets defined in the profile (template `dbt/profiles.example.yml`,
 copied to `~/.dbt/profiles.yml` on the host; all secrets via environment variables):
 
-| Target | Warehouse      | Schemas written in `ANALYTICS`                 | Used by                                 |
+| Target | Warehouse      | Schemas written in `EUROPEAN_SERVICES_ANALYTICS` | Used by                              |
 | ------ | -------------- | ---------------------------------------------- | --------------------------------------- |
 | `dev`  | `TRANSFORM_WH` | `dev_staging`, `dev_intermediate`, `dev_marts` | local development only (default target) |
 | `prod` | `TRANSFORM_WH` | `staging`, `intermediate`, `marts`             | CI/CD on merge to `main` only           |
@@ -99,10 +99,8 @@ copied to `~/.dbt/profiles.yml` on the host; all secrets via environment variabl
 - One-time Snowflake setup for the dev environment (run as `ACCOUNTADMIN`, replace `DBT_ROLE`):
 
   ```sql
-  CREATE WAREHOUSE IF NOT EXISTS DEV_WH
-    WAREHOUSE_SIZE = 'X-SMALL' AUTO_SUSPEND = 60 AUTO_RESUME = TRUE;
-  GRANT USAGE ON WAREHOUSE DEV_WH TO ROLE DBT_ROLE;
-  -- The dbt role already owns ANALYTICS, so it can create the dev_* schemas itself.
+  -- The dbt role already owns EUROPEAN_SERVICES_ANALYTICS, so it can create the
+  -- dev_* schemas itself. Both targets use TRANSFORM_WH (see the table above).
   ```
 
 ## 4. Data Sources
