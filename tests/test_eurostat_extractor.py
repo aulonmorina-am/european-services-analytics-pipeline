@@ -227,11 +227,13 @@ def test_validate_csv_identifies_empty_partition(tmp_path: Path) -> None:
         validate_csv(path, _dataset())
 
 
-def test_validate_csv_rejects_empty_obs_value_without_conf_status(tmp_path: Path) -> None:
-    path = _write_csv(tmp_path, "x,y,A,MIO_EUR,SG,CRE,US,DE,2023,,, \n")
+def test_validate_csv_accepts_empty_obs_value_without_conf_status(tmp_path: Path) -> None:
+    # ext_stec01 legitimately has suppressed rows with both flag columns empty
+    path = _write_csv(tmp_path, "x,y,A,MIO_EUR,SG,CRE,US,DE,2023,,,\n")
 
-    with pytest.raises(ValidationError, match="empty OBS_VALUE without CONF_STATUS"):
-        validate_csv(path, _dataset())
+    result = validate_csv(path, _dataset())
+
+    assert result.row_count == 1
 
 
 def test_validate_csv_rejects_confidential_row_with_value(tmp_path: Path) -> None:

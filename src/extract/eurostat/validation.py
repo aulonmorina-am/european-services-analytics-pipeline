@@ -81,18 +81,12 @@ def _validate_flag_consistency(
 ) -> None:
     """Cross-check OBS_VALUE against CONF_STATUS when the columns are present.
 
-    Eurostat suppresses confidential values: an empty OBS_VALUE must carry a
-    CONF_STATUS reason ('C' = confidential), and a row marked 'C' must not carry
-    a value.
+    A row marked CONF_STATUS='C' (confidential) must not carry a value. An empty
+    OBS_VALUE is always allowed: Eurostat usually marks it CONF_STATUS='C', but
+    some datasets leave both flag columns empty on suppressed rows.
     """
     conf_status = (row.get("CONF_STATUS") or "").strip()
-    is_empty = value in (None, "")
-    if is_empty and not conf_status:
-        raise ValidationError(
-            f"{dataset.code} has an empty OBS_VALUE without CONF_STATUS "
-            f"(period={row.get('TIME_PERIOD')!r})."
-        )
-    if conf_status == "C" and not is_empty:
+    if conf_status == "C" and value not in (None, ""):
         raise ValidationError(
             f"{dataset.code} marks CONF_STATUS=C but OBS_VALUE is present: {value!r}."
         )
