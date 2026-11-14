@@ -33,6 +33,12 @@ models:
         description: "Reference period of the observation."
         data_tests: [not_null]
 
+      - name: obs_flag
+        description: "Eurostat observation status and quality flag."
+
+      - name: conf_status
+        description: "Eurostat observation confidentiality status."
+
       - name: last_update
         description: "Eurostat dataset update timestamp."
         data_tests: [not_null]
@@ -61,6 +67,25 @@ models:
         description: "Reference period of the observation."
         data_tests: [not_null]
 
+      - name: obs_flag
+        description: "Eurostat observation status and quality flag."
+
+      - name: conf_status
+        description: "Eurostat observation confidentiality status."
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - frequency
+              - unit
+              - enterprise_size_class
+              - trade_flow
+              - nace_r_2
+              - partner
+              - geo
+              - time_period
+
   - name: stg_ext_stec_02
     description: "Staging model for Eurostat services tradeby NACE activity and EBOPS 2010 service product."
 
@@ -73,6 +98,25 @@ models:
         description: "Reference period of the observation."
         data_tests: [not_null]
 
+      - name: obs_flag
+        description: "Eurostat observation status and quality flag."
+
+      - name: conf_status
+        description: "Eurostat observation confidentiality status."
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - frequency
+              - unit
+              - ebops_2010
+              - trade_flow
+              - nace_r_2
+              - partner
+              - geo
+              - time_period
+
   - name: stg_ext_stec_03
     description: " Staging model for Eurostat services trade by NACE activity and enterprise control."
 
@@ -84,3 +128,22 @@ models:
       - name: time_period
         description: "Reference period of the observation."
         data_tests: [not_null]
+
+      - name: obs_flag
+        description: "Eurostat observation status and quality flag."
+
+      - name: conf_status
+        description: "Eurostat observation confidentiality status."
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - frequency
+              - unit
+              - enterprise_control
+              - trade_flow
+              - nace_r_2
+              - partner
+              - geo
+              - time_period
