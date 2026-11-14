@@ -48,7 +48,19 @@ datasets:
       - RS
       - TR
       - XK
-    required_columns: [freq, currency, bop_item, stk_flow, partner, geo, TIME_PERIOD, OBS_VALUE]
+    required_columns:
+      [
+        freq,
+        currency,
+        bop_item,
+        stk_flow,
+        partner,
+        geo,
+        TIME_PERIOD,
+        OBS_VALUE,
+        OBS_FLAG,
+        CONF_STATUS,
+      ]
 
   ext_stec01:
     description: Trade in services by enterprise size
@@ -90,7 +102,20 @@ datasets:
       - SE
       - IS
       - "NO"
-    required_columns: [freq, unit, sizeclas, stk_flow, nace_r2, partner, geo, TIME_PERIOD, OBS_VALUE]
+    required_columns:
+      [
+        freq,
+        unit,
+        sizeclas,
+        stk_flow,
+        nace_r2,
+        partner,
+        geo,
+        TIME_PERIOD,
+        OBS_VALUE,
+        OBS_FLAG,
+        CONF_STATUS,
+      ]
 
   ext_stec02:
     description: Trade in services by service category and economic activity
@@ -132,7 +157,20 @@ datasets:
       - SE
       - IS
       - "NO"
-    required_columns: [freq, unit, ebops2010, stk_flow, nace_r2, partner, geo, TIME_PERIOD, OBS_VALUE]
+    required_columns:
+      [
+        freq,
+        unit,
+        ebops2010,
+        stk_flow,
+        nace_r2,
+        partner,
+        geo,
+        TIME_PERIOD,
+        OBS_VALUE,
+        OBS_FLAG,
+        CONF_STATUS,
+      ]
 
   ext_stec03:
     description: Trade in services by economic activity and ownership
@@ -174,4 +212,17 @@ datasets:
       - SE
       - IS
       - "NO"
-    required_columns: [freq, unit, enterpr, stk_flow, nace_r2, partner, geo, TIME_PERIOD, OBS_VALUE]
+    required_columns:
+      [
+        freq,
+        unit,
+        enterpr,
+        stk_flow,
+        nace_r2,
+        partner,
+        geo,
+        TIME_PERIOD,
+        OBS_VALUE,
+        OBS_FLAG,
+        CONF_STATUS,
+      ]
