@@ -83,7 +83,7 @@ def build_data_url(
     *,
     partition_value: str | None = None,
 ) -> str:
-    query: dict[str, str] = {"format": dataset.format, "detail": "dataonly"}
+    query: dict[str, str] = {"format": dataset.format, "detail": "full"}
     if dataset.start_period:
         query["startPeriod"] = dataset.start_period
     if dataset.end_period:

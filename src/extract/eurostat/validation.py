@@ -47,6 +47,7 @@ def validate_csv(path: Path, dataset: DatasetConfig) -> ValidationResult:
 
         row_count = 0
         periods: set[str] = set()
+        has_conf_status = "CONF_STATUS" in columns
         for row in reader:
             row_count += 1
             period = row.get("TIME_PERIOD")
@@ -60,6 +61,8 @@ def validate_csv(path: Path, dataset: DatasetConfig) -> ValidationResult:
                     raise ValidationError(
                         f"{dataset.code} contains a non-numeric OBS_VALUE: {value!r}"
                     ) from exc
+            if has_conf_status:
+                _validate_flag_consistency(dataset, row, value)
 
         if row_count == 0:
             raise EmptyPartitionError(f"{dataset.code} contains no data rows.")
@@ -71,6 +74,28 @@ def validate_csv(path: Path, dataset: DatasetConfig) -> ValidationResult:
         row_count=row_count,
         columns=columns,
     )
+
+
+def _validate_flag_consistency(
+    dataset: DatasetConfig, row: dict[str, str], value: str | None
+) -> None:
+    """Cross-check OBS_VALUE against CONF_STATUS when the columns are present.
+
+    Eurostat suppresses confidential values: an empty OBS_VALUE must carry a
+    CONF_STATUS reason ('C' = confidential), and a row marked 'C' must not carry
+    a value.
+    """
+    conf_status = (row.get("CONF_STATUS") or "").strip()
+    is_empty = value in (None, "")
+    if is_empty and not conf_status:
+        raise ValidationError(
+            f"{dataset.code} has an empty OBS_VALUE without CONF_STATUS "
+            f"(period={row.get('TIME_PERIOD')!r})."
+        )
+    if conf_status == "C" and not is_empty:
+        raise ValidationError(
+            f"{dataset.code} marks CONF_STATUS=C but OBS_VALUE is present: {value!r}."
+        )
 
 
 def _validate_periods(dataset: DatasetConfig, periods: set[str]) -> None:
