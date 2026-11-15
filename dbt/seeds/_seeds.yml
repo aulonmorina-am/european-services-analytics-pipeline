@@ -1,0 +1,68 @@
+version: 2
+
+seeds:
+  - name: bop_items
+    description: "BPM6 bop_item codes present in the extracted data, with English labels and hierarchy from the Eurostat codelist."
+    columns:
+      - name: bop_item
+        data_tests: [not_null, unique]
+      - name: bop_item_label
+        data_tests: [not_null]
+      - name: is_ict_service
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["true", "false"]
+
+  - name: geo_areas
+    columns:
+      - name: geo
+        data_tests: [not_null, unique]
+
+  - name: partners
+    columns:
+      - name: partner
+        data_tests: [not_null, unique]
+      - name: partner_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [country, aggregate]
+
+  - name: flows
+    columns:
+      - name: flow_group
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [bop, stec]
+      - name: flow_direction
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [exports, imports, balance]
+
+  - name: units
+    columns:
+      - name: unit
+        data_tests: [not_null, unique]
+      - name: multiplier_to_eur
+        data_tests: [not_null]
+
+  - name: frequencies
+    columns:
+      - name: frequency
+        data_tests: [not_null, unique]
+
+  - name: nace_r2
+    columns:
+      - name: nace_r_2
+        data_tests: [not_null, unique]
+
+  - name: stec_characteristics
+    columns:
+      - name: characteristic_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [size_class, ebops_2010, enterprise_control]

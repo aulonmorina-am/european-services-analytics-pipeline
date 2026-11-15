@@ -1,0 +1,31 @@
+characteristic_type,characteristic_code,characteristic_label
+size_class,0-49,From 0 to 49 employees
+size_class,10-49,From 10 to 49 employees
+size_class,50-249,From 50 to 249 employees
+size_class,GE250,250 employees or more
+size_class,LT10,Fewer than 10 employees
+size_class,TOTAL,Total
+size_class,UNK,Unknown
+ebops_2010,S,Services
+ebops_2010,SA,Services: manufacturing services on physical inputs owned by others
+ebops_2010,SB,Services: maintenance and repair services n.i.e.
+ebops_2010,SC,Services: transport
+ebops_2010,SD,Services: travel
+ebops_2010,SE,Services: construction
+ebops_2010,SF,Services: insurance and pension services
+ebops_2010,SG,Services: financial services
+ebops_2010,SH,Services: charges for the use of intellectual property n.i.e.
+ebops_2010,SI,"Services: telecommunications, computer, and information services"
+ebops_2010,SJ,Services: other business services
+ebops_2010,SJ1,Services: research and development services
+ebops_2010,SJ2,Services: professional and management consulting services
+ebops_2010,SJ3,"Services: technical, trade-related, and other business services"
+ebops_2010,SK,"Services: personal, cultural, and recreational services"
+ebops_2010,SL,Services: government goods and services n.i.e.
+ebops_2010,SN,Services: services not allocated
+enterprise_control,DOMC,Enterprises controlled by domestic owners
+enterprise_control,DOMC_ABR,"Enterprises controlled by domestic owners, with own affiliates abroad"
+enterprise_control,DOMC_NABR,"Enterprises controlled by domestic owners, without own affiliates abroad"
+enterprise_control,FORC,Enterprises controlled by foreign owners
+enterprise_control,TOTAL,Total
+enterprise_control,UNK,Unknown

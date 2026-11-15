@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "snowflake": {
+      "type": "http",
+      "url": "https://MPEYKDR-SH76564.snowflakecomputing.com/api/v2/databases/EUROPEAN_SERVICES_ANALYTICS/schemas/MCP/mcp-servers/MCP_COPILOT",
+      "tools": ["execute_sql"],
+      "oauthClientId": "RqQ9ikCRJcKMOdegn7PVTS28yy8=",
+      "oauthScopes": ["session:role:COPILOT_SNOWFLAKE_MCP"],
+      "oauthPublicClient": true,
+      "oauthGrantType": "authorization_code",
+      "timeout": 60000
+    }
+  }
+}

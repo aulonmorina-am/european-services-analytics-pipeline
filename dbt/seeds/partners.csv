@@ -1,0 +1,298 @@
+partner,partner_label,partner_type,is_eu_member,is_extra_eu_aggregate
+ACP,"African, Caribbean and Pacific Group of States, signatories of the Partnership Agreement",aggregate,false,false
+ACP_AFR,African ACP states,aggregate,false,false
+ACP_CRB,Caribbean ACP states,aggregate,false,false
+ACP_PAC,Pacific ACP states,aggregate,false,false
+AD,Andorra,country,false,false
+AE,United Arab Emirates,country,false,false
+AF,Afghanistan,country,false,false
+AFR,Africa,aggregate,false,false
+AFR_C_S,Central and South Africa,aggregate,false,false
+AFR_N,Northern Africa,aggregate,false,false
+AG,Antigua and Barbuda,country,false,false
+AI,Anguilla,country,false,false
+AL,Albania,country,false,false
+AM,Armenia,country,false,false
+AME,America,aggregate,false,false
+AME_C,Central America,aggregate,false,false
+AME_LAT,Latin American countries,aggregate,false,false
+AME_N,Northern America,aggregate,false,false
+AME_S,South America,aggregate,false,false
+AO,Angola,country,false,false
+AQ,Antarctica,country,false,false
+AR,Argentina,country,false,false
+AS,American Samoa,country,false,false
+ASEAN,Association of Southeast Asian Nations,aggregate,false,false
+ASI,Asia,aggregate,false,false
+ASI_G,Gulf Arabian Countries,aggregate,false,false
+ASI_OTH,Other Asian countries (aggregate changing according to the context),aggregate,false,false
+ASI_W_IR,Western Asia including Iran,aggregate,false,false
+ASI_W_OTH,Other Western Asian countries,aggregate,false,false
+AT,Austria,country,true,false
+AU,Australia,country,false,false
+AW,Aruba,country,false,false
+AZ,Azerbaijan,country,false,false
+BA,Bosnia and Herzegovina,country,false,false
+BB,Barbados,country,false,false
+BD,Bangladesh,country,false,false
+BE,Belgium,country,true,false
+BF,Burkina Faso,country,false,false
+BG,Bulgaria,country,true,false
+BH,Bahrain,country,false,false
+BI,Burundi,country,false,false
+BJ,Benin,country,false,false
+BM,Bermuda,country,false,false
+BN,Brunei Darussalam,country,false,false
+BO,Bolivia,country,false,false
+BQ,"Bonaire, Saint Eustatius and Saba",country,false,false
+BR,Brazil,country,false,false
+BS,Bahamas,country,false,false
+BT,Bhutan,country,false,false
+BV,Bouvet Island,country,false,false
+BW,Botswana,country,false,false
+BY,Belarus,country,false,false
+BZ,Belize,country,false,false
+CA,Canada,country,false,false
+CC,Cocos (Keeling) Islands,country,false,false
+CC8_22,Candidate countries from 2022 (8 countries),aggregate,false,false
+CC9_23,Candidate countries from 2023 (9 countries),aggregate,false,false
+CD,Democratic Republic of the Congo,country,false,false
+CF,Central African Republic,country,false,false
+CG,Congo,country,false,false
+CH,Switzerland,country,false,false
+CI,Côte d’Ivoire,country,false,false
+CIS,Commonwealth of Independent States (Former Soviet Union except BAL),aggregate,false,false
+CK,Cook Islands,country,false,false
+CL,Chile,country,false,false
+CM,Cameroon,country,false,false
+CN_X_HK,China except Hong Kong,aggregate,false,false
+CO,Colombia,country,false,false
+CR,Costa Rica,country,false,false
+CU,Cuba,country,false,false
+CV,Cabo Verde,country,false,false
+CW,Curaçao,country,false,false
+CX,Christmas Island,country,false,false
+CY,Cyprus,country,true,false
+CZ,Czechia,country,true,false
+DE,Germany,country,true,false
+DJ,Djibouti,country,false,false
+DK,Denmark,country,true,false
+DM,Dominica,country,false,false
+DO,Dominican Republic,country,false,false
+DZ,Algeria,country,false,false
+EA20,Euro area – 20 countries (2023-2025),aggregate,false,false
+EC,Ecuador,country,false,false
+ECB,European Central Bank (ECB),aggregate,false,false
+EE,Estonia,country,true,false
+EFSF,European Financial Stability Facility,aggregate,false,false
+EFTA,European Free Trade Association,aggregate,false,false
+EG,Egypt,country,false,false
+EIB,European Investment Bank (EIB),aggregate,false,false
+EL,Greece,country,true,false
+ER,Eritrea,country,false,false
+ES,Spain,country,true,false
+ESM,European Stability Mechanism,aggregate,false,false
+ET,Ethiopia,country,false,false
+EU27_2020,European Union - 27 countries (from 2020),aggregate,false,false
+EU27_2020_NEA20,EU27 countries (from 2020) not in EA20 (2023-2025) - 7 countries,aggregate,false,false
+EU27_2020_NEA20_X_DK_SE,"EU27 countries (from 2020) not in EA20 (2023-2025), except Denmark and Sweden",aggregate,false,false
+EUI,Institutions and bodies of the European Union,aggregate,false,false
+EUR,Europe,aggregate,false,false
+EURMED,Mediterranean countries in the Euro-Mediterranean Partnership,aggregate,false,false
+EUR_C_E,Central and Eastern Europe,aggregate,false,false
+EUR_NEU27_2020_NEFTA,European non-EU27 countries (from 2020) and European non-EFTA countries,aggregate,false,false
+EXT_EA20,Extra-euro area - 20 countries (2023-2025),aggregate,false,true
+EXT_EA_NAL,"Extra-euro area, not allocated",aggregate,false,true
+EXT_EU27_2020,Extra-EU27 (from 2020),aggregate,false,true
+EXT_EU_NAL,"Extra-EU, not allocated",aggregate,false,true
+FI,Finland,country,true,false
+FJ,Fiji,country,false,false
+FK,Falkland Islands,country,false,false
+FM,Federated States of Micronesia,country,false,false
+FO,Faroes,country,false,false
+FR,France,country,true,false
+FZ,Franc Zone,country,false,false
+G20_X_EU27_2020,Group of Twenty except the EU27 countries (from 2020),aggregate,false,false
+GA,Gabon,country,false,false
+GD,Grenada,country,false,false
+GE,Georgia,country,false,false
+GG,Guernsey,country,false,false
+GH,Ghana,country,false,false
+GI,Gibraltar,country,false,false
+GL,Greenland,country,false,false
+GM,"Gambia, The",country,false,false
+GN,Guinea,country,false,false
+GQ,Equatorial Guinea,country,false,false
+GS,South Georgia and the South Sandwich Islands,country,false,false
+GT,Guatemala,country,false,false
+GU,Guam,country,false,false
+GW,Guinea-Bissau,country,false,false
+GY,Guyana,country,false,false
+HK,Hong Kong,country,false,false
+HM,Heard Island and McDonald Islands,country,false,false
+HN,Honduras,country,false,false
+HR,Croatia,country,true,false
+HT,Haiti,country,false,false
+HU,Hungary,country,true,false
+ID,Indonesia,country,false,false
+IE,Ireland,country,true,false
+IL,Israel,country,false,false
+IM,Isle of Man,country,false,false
+IMF,International Monetary Fund,aggregate,false,false
+IN,India,country,false,false
+INT_EA_NAL,"Intra-euro area, not allocated",aggregate,false,false
+INT_EU_NAL,"Intra-EU, not allocated",aggregate,false,false
+IO,British Indian Ocean Territory,country,false,false
+IQ,Iraq,country,false,false
+IR,Iran,country,false,false
+IS,Iceland,country,false,false
+IT,Italy,country,true,false
+JE,Jersey,country,false,false
+JM,Jamaica,country,false,false
+JO,Jordan,country,false,false
+JP,Japan,country,false,false
+KE,Kenya,country,false,false
+KG,Kyrgyzstan,country,false,false
+KH,Cambodia,country,false,false
+KI,Kiribati,country,false,false
+KM,Comoros,country,false,false
+KN,Saint Kitts and Nevis,country,false,false
+KP,North Korea,country,false,false
+KR,South Korea,country,false,false
+KW,Kuwait,country,false,false
+KY,Cayman Islands,country,false,false
+KZ,Kazakhstan,country,false,false
+LA,Laos,country,false,false
+LB,Lebanon,country,false,false
+LC,Saint Lucia,country,false,false
+LI,Liechtenstein,country,false,false
+LK,Sri Lanka,country,false,false
+LR,Liberia,country,false,false
+LS,Lesotho,country,false,false
+LT,Lithuania,country,true,false
+LU,Luxembourg,country,true,false
+LV,Latvia,country,true,false
+LY,Libya,country,false,false
+MA,Morocco,country,false,false
+MACR,Mashrek,aggregate,false,false
+MAGR,Maghreb,aggregate,false,false
+MD,Moldova,country,false,false
+ME,Montenegro,country,false,false
+MERCOSUR,"Southern Common Market Southern Common Market (MERCOSUR5_1991, MERCOSUR4_2016)",aggregate,false,false
+MERCOSUR4_2016,Southern Common Market – 4 countries (from 2016),aggregate,false,false
+MERCOSUR5_1991,Southern Common Market – 5 countries (1991-2016),aggregate,false,false
+MG,Madagascar,country,false,false
+MH,Marshall Islands,country,false,false
+MK,North Macedonia,country,false,false
+ML,Mali,country,false,false
+MM,Myanmar/Burma,country,false,false
+MN,Mongolia,country,false,false
+MO,Macao,country,false,false
+MP,Northern Mariana Islands,country,false,false
+MR,Mauritania,country,false,false
+MS,Montserrat,country,false,false
+MT,Malta,country,true,false
+MU,Mauritius,country,false,false
+MV,Maldives,country,false,false
+MW,Malawi,country,false,false
+MX,Mexico,country,false,false
+MY,Malaysia,country,false,false
+MZ,Mozambique,country,false,false
+NA,Namibia,country,false,false
+NAFTA,North American Free Trade Agreement,aggregate,false,false
+NAL,Not allocated,aggregate,false,false
+NC,New Caledonia,country,false,false
+NE,Niger,country,false,false
+NF,Norfolk Island,country,false,false
+NG,Nigeria,country,false,false
+NI,Nicaragua,country,false,false
+NIC_S1,Core Newly Industrializing Countries,aggregate,false,false
+NIC_S2A,Asian NICs of the second wave of industrialization,aggregate,false,false
+NIC_S2LA,Latin American NICs of the second wave of industrialization,aggregate,false,false
+NL,Netherlands,country,true,false
+NO,Norway,country,false,false
+NP,Nepal,country,false,false
+NR,Nauru,country,false,false
+NU,Niue,country,false,false
+NZ,New Zealand,country,false,false
+OCE_PLR,Oceania and southern polar regions,aggregate,false,false
+OECD,Organisation for Economic Co-operation and Development (OECD),aggregate,false,false
+OFFSHO,Offshore financial centers,aggregate,false,false
+OM,Oman,country,false,false
+OPEC,Organization of Petroleum Exporting Countries (OPEC),aggregate,false,false
+ORG_NEUR,Non European International Organizations,aggregate,false,false
+PA,Panama,country,false,false
+PE,Peru,country,false,false
+PF,French Polynesia,country,false,false
+PG,Papua New Guinea,country,false,false
+PH,Philippines,country,false,false
+PK,Pakistan,country,false,false
+PL,Poland,country,true,false
+PN,Pitcairn Islands,country,false,false
+PS,Palestine*,country,false,false
+PT,Portugal,country,true,false
+PW,Palau,country,false,false
+PY,Paraguay,country,false,false
+QA,Qatar,country,false,false
+RO,Romania,country,true,false
+RS,Serbia,country,false,false
+RU,Russia,country,false,false
+RW,Rwanda,country,false,false
+SA,Saudi Arabia,country,false,false
+SB,Solomon Islands,country,false,false
+SC,Seychelles,country,false,false
+SD,Sudan,country,false,false
+SE,Sweden,country,true,false
+SG,Singapore,country,false,false
+SH,"Saint Helena, Ascension and Tristan da Cunha",country,false,false
+SI,Slovenia,country,true,false
+SK,Slovakia,country,true,false
+SL,Sierra Leone,country,false,false
+SM,San Marino,country,false,false
+SN,Senegal,country,false,false
+SO,Somalia,country,false,false
+SR,Suriname,country,false,false
+SS,South Sudan,country,false,false
+ST,São Tomé and Príncipe,country,false,false
+SV,El Salvador,country,false,false
+SX,Sint Maarten,country,false,false
+SY,Syria,country,false,false
+SZ,Eswatini,country,false,false
+TC,Turks and Caicos Islands,country,false,false
+TD,Chad,country,false,false
+TF,French Southern and Antarctic Lands,country,false,false
+TG,Togo,country,false,false
+TH,Thailand,country,false,false
+TJ,Tajikistan,country,false,false
+TK,Tokelau,country,false,false
+TL,Timor-Leste,country,false,false
+TM,Turkmenistan,country,false,false
+TN,Tunisia,country,false,false
+TO,Tonga,country,false,false
+TR,Türkiye,country,false,false
+TT,Trinidad and Tobago,country,false,false
+TV,Tuvalu,country,false,false
+TW,Taiwan,country,false,false
+TZ,Tanzania,country,false,false
+UA,Ukraine,country,false,false
+UG,Uganda,country,false,false
+UK,United Kingdom,country,false,false
+UM,United States Minor Outlying Islands,country,false,false
+US,United States,country,false,false
+UY,Uruguay,country,false,false
+UZ,Uzbekistan,country,false,false
+VA,Holy See,country,false,false
+VC,Saint Vincent and the Grenadines,country,false,false
+VE,Venezuela,country,false,false
+VG,British Virgin Islands,country,false,false
+VI,US Virgin Islands,country,false,false
+VN,Viet Nam,country,false,false
+VU,Vanuatu,country,false,false
+WF,Wallis and Futuna,country,false,false
+WRL_REST,Rest of the world,aggregate,false,false
+WS,Samoa,country,false,false
+XK,Kosovo*,country,false,false
+YE,Yemen,country,false,false
+ZA,South Africa,country,false,false
+ZM,Zambia,country,false,false
+ZW,Zimbabwe,country,false,false

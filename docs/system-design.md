@@ -118,6 +118,14 @@ Additional datasets:
 
 The analytical focus is European international trade in services, particularly computer, telecommunications and information services.
 
+### Reference seeds (`dbt/seeds/`)
+
+The intermediate layer joins seed-backed dimensions (service items, partners, geo
+areas, flows, units, frequencies, NACE, stec characteristics). The CSVs are static
+reference data checked into the repo, labelled from the official Eurostat codelists.
+If a new code appears in the data, the `relationships` tests on the intermediate
+models fail the build — extend the relevant CSV by hand in that case.
+
 ## 5. Pipeline Workflow
 
 GitHub Actions coordinates the execution of the pipeline:
@@ -142,7 +150,6 @@ european-services-trade-analytics/
 │   └── extract/
 │       └── eurostat/
 ├── dbt/
-├── scripts/
 ├── tests/
 ├── docs/
 ├── Dockerfile

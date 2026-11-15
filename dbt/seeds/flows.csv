@@ -1,0 +1,6 @@
+flow_group,flow_code,flow_label,flow_direction
+bop,BAL,Balance,balance
+bop,CRE,Credit,exports
+bop,DEB,Debit,imports
+stec,EXP,Exports,exports
+stec,IMP,Imports,imports

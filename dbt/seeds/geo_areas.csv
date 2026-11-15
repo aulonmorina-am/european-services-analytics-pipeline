@@ -1,0 +1,39 @@
+geo,geo_label,is_eu_aggregate,is_eu_member
+AL,Albania,false,false
+AT,Austria,false,true
+BA,Bosnia and Herzegovina,false,false
+BE,Belgium,false,true
+BG,Bulgaria,false,true
+CH,Switzerland,false,false
+CY,Cyprus,false,true
+CZ,Czechia,false,true
+DE,Germany,false,true
+DK,Denmark,false,true
+EE,Estonia,false,true
+EL,Greece,false,true
+ES,Spain,false,true
+EU27_2020,European Union - 27 countries (from 2020),true,false
+FI,Finland,false,true
+FR,France,false,true
+HR,Croatia,false,true
+HU,Hungary,false,true
+IE,Ireland,false,true
+IS,Iceland,false,false
+IT,Italy,false,true
+LT,Lithuania,false,true
+LU,Luxembourg,false,true
+LV,Latvia,false,true
+ME,Montenegro,false,false
+MK,North Macedonia,false,false
+MT,Malta,false,true
+NL,Netherlands,false,true
+NO,Norway,false,false
+PL,Poland,false,true
+PT,Portugal,false,true
+RO,Romania,false,true
+RS,Serbia,false,false
+SE,Sweden,false,true
+SI,Slovenia,false,true
+SK,Slovakia,false,true
+TR,Türkiye,false,false
+XK,Kosovo*,false,false
