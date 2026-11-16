@@ -1,0 +1,114 @@
+version: 2
+
+models:
+  - name: fct_bop_services_trade
+    description: "Fact: BPM6 international trade in services, one row per year x service x flow x partner x reporting area, value in EUR. Long grain — BAL/CRE/DEB kept as rows via dim_flow."
+    columns:
+      - name: observation_key
+        data_tests: [not_null, unique]
+      - name: year
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_year')
+                field: year
+      - name: bop_item
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_service')
+                field: bop_item
+      - name: flow_code
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_flow')
+                field: flow_code
+      - name: partner
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_partner')
+                field: partner
+      - name: geo
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_geo')
+                field: geo
+      - name: value_eur
+        description: "Observation value in euro. NULL is legitimate for confidential/missing observations (~18% of rows) — see the consistency singular test."
+      - name: is_value_missing
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [year, bop_item, flow_code, partner, geo]
+
+  - name: fct_stec_services_trade
+    description: "Fact: services trade by enterprise characteristics (ext_stec01/02/03), one row per year x characteristic x nace x flow x partner x geo, value in EUR."
+    columns:
+      - name: observation_key
+        data_tests: [not_null, unique]
+      - name: year
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_year')
+                field: year
+      - name: characteristic_type
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [size_class, ebops_2010, enterprise_control]
+      - name: characteristic_code
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_enterprise_characteristic')
+                field: characteristic_code
+      - name: nace_r_2
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_nace_activity')
+                field: nace_r_2
+      - name: flow_code
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_flow')
+                field: flow_code
+      - name: partner
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_partner')
+                field: partner
+      - name: geo
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_geo')
+                field: geo
+      - name: value_eur
+        description: "Observation value in euro. NULL is legitimate for confidential/missing observations — see the consistency singular test."
+      - name: is_value_missing
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              [year, characteristic_type, characteristic_code, nace_r_2, flow_code, partner, geo]

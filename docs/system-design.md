@@ -60,7 +60,14 @@ RAW → STAGING → INTERMEDIATE → MARTS
 
 - **RAW:** Source data ingested through Fivetran.
 - **STAGING:** Source-level transformations.
-- **MARTS:** Analytical datasets for BI consumption.
+- **MARTS:** Analytical datasets for BI consumption. Star schema: `dim_year`,
+  `dim_service` (BPM6 hierarchy + ICT flag), `dim_partner`, `dim_geo`, `dim_flow`,
+  `dim_nace_activity`, `dim_enterprise_characteristic`, fed by
+  `fct_bop_services_trade` (year × service × flow × partner × geo) and
+  `fct_stec_services_trade` (year × characteristic × NACE × flow × partner × geo).
+  Facts are long-grain, values in EUR; NULL `value_eur` marks confidential/missing
+  observations and is never coalesced to 0. Aggregate levels (EU27, service total,
+  partner aggregates) overlap their members — BI must filter to one level.
 
 ### dbt targets: dev vs prod
 
