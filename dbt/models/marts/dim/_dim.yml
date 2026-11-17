@@ -172,16 +172,18 @@ models:
           type: categorical
 
   - name: dim_enterprise_characteristic
-    description: "Enterprise characteristic dimension for the stec fact (size class, EBOPS 2010 product, enterprise control). Composite key: characteristic_type + characteristic_code."
+    description: "Enterprise characteristic dimension for the stec fact (size class, EBOPS 2010 product, enterprise control). Composite key: characteristic_key (type || '-' || code)."
     semantic_model:
       enabled: true
-    # Composite primary entity matching the derived entity on fct_stec_services_trade.
-    derived_semantics:
-      entities:
-        - name: characteristic
-          type: primary
-          expr: "characteristic_type || '-' || characteristic_code"
     columns:
+      - name: characteristic_key
+        data_tests:
+          - not_null
+          - unique
+        description: "Composite key: characteristic_type || '-' || characteristic_code.  Used for joins to the fact table into Power BI."
+        entity:
+          type: primary
+          name: characteristic
       - name: characteristic_type
         data_tests:
           - not_null
@@ -199,7 +201,3 @@ models:
         dimension:
           type: categorical
           label: "Characteristic"
-    data_tests:
-      - dbt_utils.unique_combination_of_columns:
-          arguments:
-            combination_of_columns: [characteristic_type, characteristic_code]

@@ -24,6 +24,7 @@ SELECT
     observation_key,
     year,
     DATEFROMPARTS(year, 1, 1) AS year_start,
+    characteristic_type || '-' || characteristic_code AS characteristic_key,
     characteristic_type,
     characteristic_code,
     nace_r_2,

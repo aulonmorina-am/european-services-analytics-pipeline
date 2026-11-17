@@ -158,12 +158,6 @@ models:
       enabled: true
     # Default time dimension for the model's metrics (annual data, stored as Jan 1).
     agg_time_dimension: year_start
-    # Composite join key to dim_enterprise_characteristic (type + code).
-    derived_semantics:
-      entities:
-        - name: characteristic
-          type: foreign
-          expr: "characteristic_type || '-' || characteristic_code"
     columns:
       - name: observation_key
         data_tests: [not_null, unique]
@@ -187,6 +181,16 @@ models:
         dimension:
           type: time
           label: Year
+      - name: characteristic_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_enterprise_characteristic')
+                field: characteristic_key
+        entity:
+          type: foreign
+          name: characteristic
       - name: characteristic_type
         data_tests:
           - not_null
@@ -196,10 +200,6 @@ models:
       - name: characteristic_code
         data_tests:
           - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_enterprise_characteristic')
-                field: characteristic_code
       - name: nace_r_2
         data_tests:
           - not_null
@@ -248,7 +248,15 @@ models:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns:
-              [year, characteristic_type, characteristic_code, nace_r_2, flow_code, partner, geo]
+              [
+                year,
+                characteristic_type,
+                characteristic_code,
+                nace_r_2,
+                flow_code,
+                partner,
+                geo,
+              ]
     metrics:
       - name: stec_trade_value_eur
         description: "Sum of observation values in EUR. NULL means confidential/missing and is ignored by SUM — never coalesced to 0. Aggregate levels overlap their members: when summing, filter to one level, e.g. geo__is_eu_aggregate = false or partner__partner_type = 'country'."
