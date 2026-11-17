@@ -24,6 +24,7 @@ deduplicated AS (
 SELECT
     observation_key,
     year,
+    DATEFROMPARTS(year, 1, 1) AS year_start,
     bop_item,
     bop_flow AS flow_code,
     partner,

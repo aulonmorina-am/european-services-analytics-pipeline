@@ -80,6 +80,11 @@ jobs:
       - name: Build and test models (prod target)
         run: uv run dbt build --project-dir dbt --target prod
 
+      # Semantic manifest is validated by parse/build; list semantic-layer
+      # resources so the Lightdash-facing layer is visibly deployed.
+      - name: Validate semantic layer resources (prod)
+        run: uv run dbt ls --project-dir dbt --target prod --resource-type semantic_model --resource-type metric --output name
+
       - name: Generate docs
         run: uv run dbt docs generate --project-dir dbt --target prod
 

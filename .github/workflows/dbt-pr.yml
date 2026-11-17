@@ -114,6 +114,11 @@ jobs:
       - name: Parse project (no warehouse needed)
         run: uv run dbt parse --project-dir dbt --target dev
 
+      # dbt parse validates the semantic manifest (semantic models + metrics);
+      # list the semantic-layer resources so a broken definition fails loudly here.
+      - name: Validate semantic layer resources
+        run: uv run dbt ls --project-dir dbt --target dev --resource-type semantic_model --resource-type metric --output name
+
       # Slim CI: build only what changed in this PR + downstream. --defer resolves
       # unchanged upstream refs against prod (read-only); --target dev writes the
       # selected models into DEV_* schemas. If no prod manifest exists yet (first

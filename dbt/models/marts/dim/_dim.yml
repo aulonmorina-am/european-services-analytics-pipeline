@@ -2,20 +2,47 @@ version: 2
 
 models:
   - name: dim_year
-    description: "Calendar dimension derived from the facts (annual data, currently 2022-2024)."
+    description: "Calendar dimension derived from the facts (annual data, currently 2022-2024). Doubles as the MetricFlow time spine (year_start at day granularity)."
+    semantic_model:
+      enabled: true
+    agg_time_dimension: year_start
+    # MetricFlow requires a time spine with granularity DAY or finer; for annual
+    # data one row per year (Jan 1) at day granularity is sufficient.
+    time_spine:
+      standard_granularity_column: year_start
     columns:
       - name: year
         data_tests: [not_null, unique]
+        entity:
+          type: primary
+          name: calendar_year
+      - name: year_start
+        description: "January 1 of the year; time dimension for the semantic layer."
+        data_tests: [not_null]
+        granularity: day
+        dimension:
+          type: time
+          label: Year
       - name: is_latest_year
         data_tests: [not_null]
+        dimension:
+          type: categorical
 
   - name: dim_service
     description: "Service classification dimension (BPM6 bop_item) with hierarchy level for drill-down. Filter to one service_level in BI — totals already contain their children."
+    semantic_model:
+      enabled: true
     columns:
       - name: bop_item
         data_tests: [not_null, unique]
+        entity:
+          type: primary
+          name: service
       - name: bop_item_label
         data_tests: [not_null]
+        dimension:
+          type: categorical
+          label: "Service"
       - name: parent_bop_item
         data_tests:
           - relationships:
@@ -24,72 +51,136 @@ models:
                 field: bop_item
                 config:
                   where: "parent_bop_item is not null"
+        dimension:
+          type: categorical
       - name: service_level
+        description: "Hierarchy level: 0 = total 'S', 1 = sections, 2-3 = sub-items. Never sum across levels."
         data_tests: [not_null]
+        dimension:
+          type: categorical
       - name: is_ict_service
         description: "True for SI* codes (telecommunications, computer and information services)."
         data_tests: [not_null]
+        dimension:
+          type: categorical
 
   - name: dim_partner
     description: "Partner dimension: countries vs geopolitical aggregates. Aggregates overlap their member countries — never sum both."
+    semantic_model:
+      enabled: true
     columns:
       - name: partner
         data_tests: [not_null, unique]
+        entity:
+          type: primary
+          name: partner
       - name: partner_label
         data_tests: [not_null]
+        dimension:
+          type: categorical
+          label: "Partner"
       - name: partner_type
         data_tests:
           - not_null
           - accepted_values:
               arguments:
                 values: [country, aggregate]
+        dimension:
+          type: categorical
       - name: is_eu_member
         data_tests: [not_null]
+        dimension:
+          type: categorical
       - name: is_extra_eu_aggregate
         data_tests: [not_null]
+        dimension:
+          type: categorical
 
   - name: dim_geo
     description: "Reporting-area dimension. EU27_2020 overlaps member-country rows — never sum both."
+    semantic_model:
+      enabled: true
     columns:
       - name: geo
         data_tests: [not_null, unique]
+        entity:
+          type: primary
+          name: geo
       - name: geo_label
         data_tests: [not_null]
+        dimension:
+          type: categorical
+          label: "Reporting area"
       - name: is_eu_aggregate
         data_tests: [not_null]
+        dimension:
+          type: categorical
       - name: is_eu_member
         data_tests: [not_null]
+        dimension:
+          type: categorical
 
   - name: dim_flow
     description: "Flow dimension shared by both facts (bop: BAL/CRE/DEB; stec: EXP/IMP). Codes are disjoint across groups."
+    semantic_model:
+      enabled: true
     columns:
       - name: flow_code
         data_tests: [not_null, unique]
+        entity:
+          type: primary
+          name: flow
       - name: flow_group
         data_tests:
           - not_null
           - accepted_values:
               arguments:
                 values: [bop, stec]
+        dimension:
+          type: categorical
+      - name: flow_label
+        dimension:
+          type: categorical
+          label: "Flow"
       - name: flow_direction
         data_tests:
           - not_null
           - accepted_values:
               arguments:
                 values: [exports, imports, balance]
+        dimension:
+          type: categorical
 
   - name: dim_nace_activity
     description: "Economic activity dimension (NACE rev. 2) for the stec fact; nace_section is the one-letter section."
+    semantic_model:
+      enabled: true
     columns:
       - name: nace_r_2
         data_tests: [not_null, unique]
+        entity:
+          type: primary
+          name: nace
       - name: nace_r_2_label
         data_tests: [not_null]
+        dimension:
+          type: categorical
+          label: "NACE activity"
       - name: nace_section
         data_tests: [not_null]
+        dimension:
+          type: categorical
 
   - name: dim_enterprise_characteristic
     description: "Enterprise characteristic dimension for the stec fact (size class, EBOPS 2010 product, enterprise control). Composite key: characteristic_type + characteristic_code."
+    semantic_model:
+      enabled: true
+    # Composite primary entity matching the derived entity on fct_stec_services_trade.
+    derived_semantics:
+      entities:
+        - name: characteristic
+          type: primary
+          expr: "characteristic_type || '-' || characteristic_code"
     columns:
       - name: characteristic_type
         data_tests:
@@ -97,10 +188,17 @@ models:
           - accepted_values:
               arguments:
                 values: [size_class, ebops_2010, enterprise_control]
+        dimension:
+          type: categorical
       - name: characteristic_code
         data_tests: [not_null]
+        dimension:
+          type: categorical
       - name: characteristic_label
         data_tests: [not_null]
+        dimension:
+          type: categorical
+          label: "Characteristic"
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:

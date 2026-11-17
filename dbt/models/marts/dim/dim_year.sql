@@ -10,5 +10,6 @@ WITH years AS (
 
 SELECT
     year,
+    DATEFROMPARTS(year, 1, 1) AS year_start,
     year = (SELECT MAX(year) FROM years) AS is_latest_year
 FROM years

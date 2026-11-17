@@ -18,7 +18,7 @@ Fivetran
 Snowflake
      |
      v
-dbt Core
+dbt Core (models + Semantic Layer / MetricFlow)
      |
      v
 Snowflake Analytics
@@ -60,7 +60,8 @@ RAW → STAGING → INTERMEDIATE → MARTS
 
 - **RAW:** Source data ingested through Fivetran.
 - **STAGING:** Source-level transformations.
-- **MARTS:** Analytical datasets for BI consumption. Star schema: `dim_year`,
+- **MARTS:** Analytical datasets for BI consumption. Star schema: `dim_year` (doubles
+  as the MetricFlow time spine via `year_start`),
   `dim_service` (BPM6 hierarchy + ICT flag), `dim_partner`, `dim_geo`, `dim_flow`,
   `dim_nace_activity`, `dim_enterprise_characteristic`, fed by
   `fct_bop_services_trade` (year × service × flow × partner × geo) and
@@ -68,6 +69,30 @@ RAW → STAGING → INTERMEDIATE → MARTS
   Facts are long-grain, values in EUR; NULL `value_eur` marks confidential/missing
   observations and is never coalesced to 0. Aggregate levels (EU27, service total,
   partner aggregates) overlap their members — BI must filter to one level.
+
+### Semantic layer (dbt Semantic Layer / MetricFlow)
+
+Every mart model carries an inline `semantic_model` block (dbt v1.12+ spec) in
+`dbt/models/marts/**/_*.yml`: entities join facts to dims (`observation`,
+`calendar_year`, `service`, `flow`, `partner`, `geo`, `nace`, and the composite
+`characteristic` for stec), and `year_start` (Jan 1 of the year) on `dim_year` is
+both the time dimension and the time spine (one row per year at day granularity is
+enough for annual data). On top of the two facts, 18 metrics are
+defined: trade value / observations / missing observations, exports / imports /
+balance (via `flow__flow_direction` filters), derived net balance and YoY growth
+(`offset_window: 1 year`), and ratio metrics for ICT share of exports and extra-EU
+share (stec: NACE section J share). Metric and dimension descriptions carry the two
+data rules: NULL `value_eur` = confidential/missing (SUM ignores it, never coalesce
+to 0) and aggregate levels must never be summed together with their members.
+
+- `dbt parse`/`dbt build` validate the semantic manifest; `dbt ls --resource-type
+  semantic_model --resource-type metric` is run in CI (`dbt-pr.yml`, `dbt.yml`) so a
+  broken metric definition fails the pipeline.
+- The compiled `dbt/target/manifest.json` (uploaded as the `prod-manifest` artifact)
+  contains all `semantic_models` and `metrics` nodes — this is what BI tools consume
+  to query governed metrics by name (the certified Power BI connector requires
+  dbt Cloud; self-hosted tools like Lightdash OSS read the dbt project/manifest
+  directly against Snowflake).
 
 ### dbt targets: dev vs prod
 
@@ -140,8 +165,9 @@ GitHub Actions coordinates the execution of the pipeline:
 1. GitHub Actions (monthly cron or manual dispatch) runs the Python extractor.
 2. Extracted files are uploaded to ADLS Gen2.
 3. Fivetran polls ADLS Gen2 on its own schedule (managed Azure Blob Storage connector) and loads new files into Snowflake RAW database.
-4. dbt transforms data within Snowflake.
-5. Power BI consumes the analytical models.
+4. dbt transforms data within Snowflake and compiles the semantic manifest
+   (semantic models + metrics in `dbt/target/manifest.json`).
+5. The BI tool consumes the analytical models / governed metrics.
 
 CI/CD workflows independently validate project code and dbt models: `.github/workflows/dbt.yml`
 deploys with `dbt build --target prod` on merges to `main` (and manual dispatch) only.
