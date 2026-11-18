@@ -51,4 +51,6 @@ models:
 # schema so they never collide with medallion layers.
 seeds:
   european_services_analytics:
-    +schema: reference
+    +schema: seeds
+flags:
+  require_generic_test_arguments_property: true
