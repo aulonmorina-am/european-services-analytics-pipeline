@@ -13,10 +13,11 @@ models:
         description: "Parent code in the BPM6 hierarchy (null for the total 'S')."
         data_tests:
           - relationships:
-              to: ref('int_bop_item')
-              field: bop_item
-              config:
-                where: "parent_bop_item is not null"
+              arguments:
+                to: ref('int_bop_item')
+                field: bop_item
+                config:
+                  where: "parent_bop_item is not null"
       - name: is_ict_service
         description: "True for SI* codes (telecom, computer and information services)."
         data_tests: [not_null]
@@ -32,7 +33,8 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              values: [country, aggregate]
+              arguments:
+                values: [country, aggregate]
       - name: is_eu_member
         data_tests: [not_null]
       - name: is_extra_eu_aggregate
@@ -59,33 +61,38 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('frequencies')
-              field: frequency
+              arguments:
+                to: ref('frequencies')
+                field: frequency
       - name: bop_item
         data_tests:
           - not_null
           - relationships:
-              to: ref('int_bop_item')
-              field: bop_item
+              arguments:
+                to: ref('int_bop_item')
+                field: bop_item
       - name: bop_flow
         description: "BPM6 flow: CRE=credit/exports, DEB=debit/imports, BAL=balance. Codes are disjoint from the stec EXP/IMP codes."
         data_tests:
           - not_null
           - relationships:
-              to: ref('flows')
-              field: flow_code
+              arguments:
+                to: ref('flows')
+                field: flow_code
       - name: partner
         data_tests:
           - not_null
           - relationships:
-              to: ref('int_partner')
-              field: partner
+              arguments:
+                to: ref('int_partner')
+                field: partner
       - name: geo
         data_tests:
           - not_null
           - relationships:
-              to: ref('int_geo_area')
-              field: geo
+              arguments:
+                to: ref('int_geo_area')
+                field: geo
       - name: year
         description: "Reference year (annual data)."
         data_tests: [not_null]
@@ -97,12 +104,14 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('units')
-              field: unit
+              arguments:
+                to: ref('units')
+                field: unit
       - name: flow_direction
         data_tests:
           - accepted_values:
-              values: [exports, imports, balance]
+              arguments:
+                values: [exports, imports, balance]
 
     data_tests:
       - dbt_utils.unique_combination_of_columns:
@@ -125,38 +134,44 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              values: [size_class, ebops_2010, enterprise_control]
+              arguments:
+                values: [size_class, ebops_2010, enterprise_control]
       - name: characteristic_code
         data_tests:
           - not_null
           - relationships:
-              to: ref('stec_characteristics')
-              field: characteristic_code
+              arguments:
+                to: ref('stec_characteristics')
+                field: characteristic_code
       - name: nace_r_2
         data_tests:
           - not_null
           - relationships:
-              to: ref('nace_r2')
-              field: nace_r_2
+              arguments:
+                to: ref('nace_r2')
+                field: nace_r_2
       - name: trade_flow
         description: "EXP=exports, IMP=imports. Codes are disjoint from the bop BAL/CRE/DEB codes."
         data_tests:
           - not_null
           - relationships:
-              to: ref('flows')
-              field: flow_code
+              arguments:
+                to: ref('flows')
+                field: flow_code
       - name: partner
         data_tests:
           - not_null
           - relationships:
-              to: ref('int_partner')
-              field: partner
+              arguments:
+                to: ref('int_partner')
+                field: partner
       - name: geo
         data_tests:
           - not_null
           - relationships:
-              to: ref('int_geo_area')
-              field: geo
+              arguments:
+                to: ref('int_geo_area')
+                field: geo
       - name: year
         data_tests: [not_null]
       - name: value_eur
@@ -165,8 +180,9 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('units')
-              field: unit
+              arguments:
+                to: ref('units')
+                field: unit
 
     data_tests:
       - dbt_utils.unique_combination_of_columns:
