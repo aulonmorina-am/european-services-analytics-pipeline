@@ -58,11 +58,22 @@ seeds:
     columns:
       - name: nace_r_2
         data_tests: [not_null, unique]
+    description: "NACE R2 codes for the European Union."
 
   - name: stec_characteristics
+    description: "Enterprise characteristic codes (size class, EBOPS 2010 product, enterprise control). Primary key is the composite (characteristic_type, characteristic_code) — codes like TOTAL/UNK repeat across types."
     columns:
       - name: characteristic_type
         data_tests:
+          - not_null
           - accepted_values:
               arguments:
                 values: [size_class, ebops_2010, enterprise_control]
+      - name: characteristic_code
+        data_tests: [not_null]
+      - name: characteristic_label
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [characteristic_type, characteristic_code]
