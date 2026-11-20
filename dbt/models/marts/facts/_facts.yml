@@ -9,10 +9,14 @@ models:
     agg_time_dimension: year_start
     columns:
       - name: observation_key
+        description: "Surrogate key over frequency + currency + bop_item + bop_flow + partner + geo + time_period (see int_bop_its_6_det). Wider than the mart grain so it stays unique if currency/frequency vary."
         data_tests: [not_null, unique]
         entity:
           type: primary
           name: bop_observation
+        dimension:
+          type: categorical
+          name: bop_observation_key
       - name: year
         data_tests:
           - not_null
@@ -23,6 +27,9 @@ models:
         entity:
           type: foreign
           name: calendar_year
+        dimension:
+          type: categorical
+          name: year_number
       - name: year_start
         description: "January 1 of the observation year; time dimension backing the metrics."
         data_tests: [not_null]
@@ -40,6 +47,9 @@ models:
         entity:
           type: foreign
           name: service
+        dimension:
+          type: categorical
+          name: service_code
       - name: flow_code
         data_tests:
           - not_null
@@ -50,6 +60,9 @@ models:
         entity:
           type: foreign
           name: flow
+        dimension:
+          type: categorical
+          name: flow_code
       - name: partner
         data_tests:
           - not_null
@@ -60,6 +73,9 @@ models:
         entity:
           type: foreign
           name: partner
+        dimension:
+          type: categorical
+          name: partner_code
       - name: geo
         data_tests:
           - not_null
@@ -70,6 +86,9 @@ models:
         entity:
           type: foreign
           name: geo
+        dimension:
+          type: categorical
+          name: geo_code
       - name: value_eur
         description: "Observation value in euro. NULL is legitimate for confidential/missing observations (~18% of rows) — see the consistency singular test."
       - name: is_value_missing
@@ -80,11 +99,12 @@ models:
             combination_of_columns: [year, bop_item, flow_code, partner, geo]
     metrics:
       - name: bop_trade_value_eur
-        description: "Sum of observation values in EUR. NULL means confidential/missing and is ignored by SUM — never coalesced to 0. Aggregate levels overlap their members: when summing, filter to one level, e.g. geo__is_eu_aggregate = false, partner__partner_type = 'country', or a single service__service_level."
+        description: "Sum of observation values in EUR at the reporting grain (service level 1). NULL means confidential/missing and is ignored by SUM — never coalesced to 0. Aggregate levels overlap their members, so this metric always filters to service__is_reporting_level."
         label: "BOP trade value (EUR)"
         type: simple
         agg: sum
         expr: value_eur
+        filter: "{{ Dimension('service__is_reporting_level') }} = true"
       - name: bop_observations
         label: "BOP observations"
         type: simple
@@ -97,23 +117,26 @@ models:
         agg: sum_boolean
         expr: is_value_missing
       - name: bop_exports_eur
+        description: "Exports in EUR at the reporting grain (service level 1). Filters to exports AND service__is_reporting_level — without the level filter this sums every level of the BPM6 hierarchy and over-counts ~3x."
         label: "Exports (EUR, BPM6 credit)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('flow__flow_direction') }} = 'exports'"
+        filter: "{{ Dimension('flow__flow_direction') }} = 'exports' AND {{ Dimension('service__is_reporting_level') }} = true"
       - name: bop_imports_eur
+        description: "Imports in EUR at the reporting grain (service level 1). See bop_exports_eur on why the level filter is required."
         label: "Imports (EUR, BPM6 debit)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('flow__flow_direction') }} = 'imports'"
+        filter: "{{ Dimension('flow__flow_direction') }} = 'imports' AND {{ Dimension('service__is_reporting_level') }} = true"
       - name: bop_balance_eur
+        description: "Balance flows (BAL) in EUR at the reporting grain (service level 1)."
         label: "Balance (EUR, BPM6)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('flow__flow_direction') }} = 'balance'"
+        filter: "{{ Dimension('flow__flow_direction') }} = 'balance' AND {{ Dimension('service__is_reporting_level') }} = true"
       - name: bop_net_balance_eur
         description: "Exports minus imports; should reconcile with bop_balance_eur."
         label: "BOP net balance (EUR)"
@@ -136,21 +159,27 @@ models:
             alias: exports_prev_year
             offset_window: 1 year
       - name: bop_ict_exports_share
-        description: "Share of exports going to ICT services (SI*: telecom, computer, information) of total exports."
+        description: "Share of exports going to ICT services (SI*: telecom, computer, information) of total exports. Implemented as derived (aliased inputs) rather than ratio — a ratio over the same metric twice compiles to two identically-named CTE columns and Snowflake raises 'ambiguous column name'."
         label: "ICT share of exports"
-        type: ratio
-        numerator:
-          name: bop_exports_eur
-          filter: "{{ Dimension('service__is_ict_service') }} = true"
-        denominator: bop_exports_eur
+        type: derived
+        expr: ict_exports / nullif(total_exports, 0)
+        input_metrics:
+          - name: bop_exports_eur
+            alias: ict_exports
+            filter: "{{ Dimension('service__is_ict_service') }} = true"
+          - name: bop_exports_eur
+            alias: total_exports
       - name: bop_extra_eu_exports_share
-        description: "Share of exports with extra-EU27 partner aggregates of total exports."
+        description: "Share of exports with extra-EU27 partner aggregates of total exports. Implemented as derived (aliased inputs) rather than ratio — see bop_ict_exports_share."
         label: "Extra-EU share of exports"
-        type: ratio
-        numerator:
-          name: bop_exports_eur
-          filter: "{{ Dimension('partner__is_extra_eu_aggregate') }} = true"
-        denominator: bop_exports_eur
+        type: derived
+        expr: extra_eu_exports / nullif(total_exports, 0)
+        input_metrics:
+          - name: bop_exports_eur
+            alias: extra_eu_exports
+            filter: "{{ Dimension('partner__is_extra_eu_aggregate') }} = true"
+          - name: bop_exports_eur
+            alias: total_exports
 
   - name: fct_stec_services_trade
     description: "Fact: services trade by enterprise characteristics (ext_stec01/02/03), one row per year x characteristic x nace x flow x partner x geo, value in EUR."
@@ -160,10 +189,14 @@ models:
     agg_time_dimension: year_start
     columns:
       - name: observation_key
+        description: "Surrogate key over characteristic_type + characteristic_code + frequency + unit + nace_r_2 + trade_flow + partner + geo + time_period (see int_ext_stec_union). Wider than the mart grain so it stays unique if unit/frequency vary."
         data_tests: [not_null, unique]
         entity:
           type: primary
           name: stec_observation
+        dimension:
+          type: categorical
+          name: stec_observation_key
       - name: year
         data_tests:
           - not_null
@@ -174,6 +207,9 @@ models:
         entity:
           type: foreign
           name: calendar_year
+        dimension:
+          type: categorical
+          name: year_number
       - name: year_start
         description: "January 1 of the observation year; time dimension backing the metrics."
         data_tests: [not_null]
@@ -191,15 +227,24 @@ models:
         entity:
           type: foreign
           name: characteristic
+        dimension:
+          type: categorical
+          name: characteristic_key
       - name: characteristic_type
         data_tests:
           - not_null
           - accepted_values:
               arguments:
                 values: [size_class, ebops_2010, enterprise_control]
+        dimension:
+          type: categorical
+          name: characteristic_type
       - name: characteristic_code
         data_tests:
           - not_null
+        dimension:
+          type: categorical
+          name: characteristic_code
       - name: nace_r_2
         data_tests:
           - not_null
@@ -210,6 +255,9 @@ models:
         entity:
           type: foreign
           name: nace
+        dimension:
+          type: categorical
+          name: nace_code
       - name: flow_code
         data_tests:
           - not_null
@@ -220,6 +268,9 @@ models:
         entity:
           type: foreign
           name: flow
+        dimension:
+          type: categorical
+          name: flow_code
       - name: partner
         data_tests:
           - not_null
@@ -230,6 +281,9 @@ models:
         entity:
           type: foreign
           name: partner
+        dimension:
+          type: categorical
+          name: partner_code
       - name: geo
         data_tests:
           - not_null
@@ -240,6 +294,9 @@ models:
         entity:
           type: foreign
           name: geo
+        dimension:
+          type: categorical
+          name: geo_code
       - name: value_eur
         description: "Observation value in euro. NULL is legitimate for confidential/missing observations — see the consistency singular test."
       - name: is_value_missing
@@ -259,11 +316,12 @@ models:
               ]
     metrics:
       - name: stec_trade_value_eur
-        description: "Sum of observation values in EUR. NULL means confidential/missing and is ignored by SUM — never coalesced to 0. Aggregate levels overlap their members: when summing, filter to one level, e.g. geo__is_eu_aggregate = false or partner__partner_type = 'country'."
+        description: "Sum of observation values in EUR at the reporting grain (service level 1). NULL means confidential/missing and is ignored by SUM — never coalesced to 0. Aggregate levels overlap their members, so this metric always filters to service__is_reporting_level."
         label: "STEC trade value (EUR)"
         type: simple
         agg: sum
         expr: value_eur
+        filter: "{{ Dimension('service__is_reporting_level') }} = true"
       - name: stec_observations
         label: "STEC observations"
         type: simple
@@ -276,17 +334,19 @@ models:
         agg: sum_boolean
         expr: is_value_missing
       - name: stec_exports_eur
+        description: "Exports in EUR at the reporting grain (service level 1). See bop_exports_eur on why the level filter is required."
         label: "Exports (EUR)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('flow__flow_direction') }} = 'exports'"
+        filter: "{{ Dimension('flow__flow_direction') }} = 'exports' AND {{ Dimension('service__is_reporting_level') }} = true"
       - name: stec_imports_eur
+        description: "Imports in EUR at the reporting grain (service level 1). See bop_exports_eur on why the level filter is required."
         label: "Imports (EUR)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('flow__flow_direction') }} = 'imports'"
+        filter: "{{ Dimension('flow__flow_direction') }} = 'imports' AND {{ Dimension('service__is_reporting_level') }} = true"
       - name: stec_net_balance_eur
         description: "Exports minus imports."
         label: "STEC net balance (EUR)"
@@ -309,10 +369,13 @@ models:
             alias: exports_prev_year
             offset_window: 1 year
       - name: stec_j_sector_exports_share
-        description: "Share of exports by enterprises in NACE section J (information & communication) of total exports."
+        description: "Share of exports by enterprises in NACE section J (information & communication) of total exports. Implemented as derived (aliased inputs) rather than ratio — see bop_ict_exports_share."
         label: "NACE J share of exports"
-        type: ratio
-        numerator:
-          name: stec_exports_eur
-          filter: "{{ Dimension('nace__nace_section') }} = 'J'"
-        denominator: stec_exports_eur
+        type: derived
+        expr: j_sector_exports / nullif(total_exports, 0)
+        input_metrics:
+          - name: stec_exports_eur
+            alias: j_sector_exports
+            filter: "{{ Dimension('nace__nace_section') }} = 'J'"
+          - name: stec_exports_eur
+            alias: total_exports

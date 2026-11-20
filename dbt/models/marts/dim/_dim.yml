@@ -16,6 +16,9 @@ models:
         entity:
           type: primary
           name: calendar_year
+        dimension:
+          type: categorical
+          name: year_number
       - name: year_start
         description: "January 1 of the year; time dimension for the semantic layer."
         data_tests: [not_null]
@@ -38,6 +41,9 @@ models:
         entity:
           type: primary
           name: service
+        dimension:
+          type: categorical
+          name: service_code
       - name: bop_item_label
         data_tests: [not_null]
         dimension:
@@ -58,6 +64,11 @@ models:
         data_tests: [not_null]
         dimension:
           type: categorical
+      - name: is_reporting_level
+        description: "True for level 1 (sections SA..SZ), the reporting grain. Value metrics filter to this so consumers never sum across the hierarchy. Use this instead of hardcoding service_level = 1."
+        data_tests: [not_null]
+        dimension:
+          type: categorical
       - name: is_ict_service
         description: "True for SI* codes (telecommunications, computer and information services)."
         data_tests: [not_null]
@@ -74,6 +85,9 @@ models:
         entity:
           type: primary
           name: partner
+        dimension:
+          type: categorical
+          name: partner_code
       - name: partner_label
         data_tests: [not_null]
         dimension:
@@ -106,6 +120,9 @@ models:
         entity:
           type: primary
           name: geo
+        dimension:
+          type: categorical
+          name: geo_code
       - name: geo_label
         data_tests: [not_null]
         dimension:
@@ -130,6 +147,9 @@ models:
         entity:
           type: primary
           name: flow
+        dimension:
+          type: categorical
+          name: flow_code
       - name: flow_group
         data_tests:
           - not_null
@@ -161,6 +181,9 @@ models:
         entity:
           type: primary
           name: nace
+        dimension:
+          type: categorical
+          name: nace_code
       - name: nace_r_2_label
         data_tests: [not_null]
         dimension:
@@ -185,6 +208,9 @@ models:
         entity:
           type: primary
           name: characteristic
+        dimension:
+          type: categorical
+          name: characteristic_key
       - name: characteristic_type
         data_tests:
           - not_null

@@ -73,36 +73,95 @@ RAW → STAGING → INTERMEDIATE → MARTS
 ### Semantic layer (dbt Semantic Layer / MetricFlow)
 
 Every mart model carries an inline `semantic_model` block (dbt v1.12+ spec) in
-`dbt/models/marts/**/_*.yml`: entities join facts to dims (`observation`,
-`calendar_year`, `service`, `flow`, `partner`, `geo`, `nace`, and the composite
-`characteristic` for stec), and `year_start` (Jan 1 of the year) on `dim_year` is
-both the time dimension and the time spine (one row per year at day granularity is
-enough for annual data). On top of the two facts, 18 metrics are
-defined: trade value / observations / missing observations, exports / imports /
-balance (via `flow__flow_direction` filters), derived net balance and YoY growth
-(`offset_window: 1 year`), and ratio metrics for ICT share of exports and extra-EU
-share (stec: NACE section J share). Metric and dimension descriptions carry the two
-data rules: NULL `value_eur` = confidential/missing (SUM ignores it, never coalesce
-to 0) and aggregate levels must never be summed together with their members.
+`dbt/models/marts/**/_*.yml`. Entities join facts to dims; `year_start` (Jan 1) on
+`dim_year` is both the time dimension and the MetricFlow time spine.
 
-- `dbt parse`/`dbt build` validate the semantic manifest; `dbt ls --resource-type
-  semantic_model --resource-type metric` is run in CI (`dbt-pr.yml`, `dbt.yml`) so a
-  broken metric definition fails the pipeline.
-- The compiled `dbt/target/manifest.json` (uploaded as the `prod-manifest` artifact)
-  contains all `semantic_models` and `metrics` nodes — this is what BI tools consume
-  to query governed metrics by name (the certified Power BI connector requires
-  dbt Cloud; self-hosted tools like Lightdash OSS read the dbt project/manifest
-  directly against Snowflake).
+The two facts carry 18 metrics: trade value, observation and missing-observation
+counts; exports/imports/balance (via `flow__flow_direction`); derived net balance
+and YoY growth (`offset_window: 1 year`); and three share metrics (ICT share,
+extra-EU share, stec NACE section J share). The share metrics are `derived` rather
+than `ratio` — a ratio whose numerator and denominator are the same metric compiles
+to two identically-named CTE columns and Snowflake raises `ambiguous column name`.
+
+Three rules are repeated in metric and dimension descriptions:
+
+- NULL `value_eur` means confidential/missing — SUM skips it; never coalesce to 0.
+- Aggregate levels (EU27, service total, partner aggregates) overlap their members
+  — never sum a level together with its members.
+- Value metrics filter to `service__is_reporting_level` (BPM6 level 1, sections
+  SA..SZ). This is baked into the metric, not left to BI: `bop_exports_eur` without
+  it sums all six hierarchy levels and over-counts roughly 3x, so exports would
+  appear larger than total trade.
+
+#### Surrogate keys
+
+Both facts use `observation_key`, a `dbt_utils.generate_surrogate_key` over the full
+grain plus `frequency`/`currency` (bop) or `frequency`/`unit` (stec). The inputs are
+deliberately wider than the mart grain so the key survives those columns varying.
+Uniqueness and non-null are enforced by `data_tests` on the column;
+`unique_combination_of_columns` guards the natural grain.
+
+#### Unit conversion safeguards
+
+The EUR conversion is a `LEFT JOIN` to `units.csv`
+(`obs_value * multiplier_to_eur`). An unmapped unit code produces a NULL multiplier,
+so `value_eur` becomes NULL and silently vanishes from every SUM — indistinguishable
+from a legitimately missing observation.
+
+The single guard is `accepted_values: [MIO_EUR, THS_EUR]` on both `currency` (bop)
+and `unit` (stec), so a new Eurostat unit fails the build instead of under-reporting.
+`tests/mart_value_eur_flag_consistency.sql` already covers the downstream symptom: it
+fails on any row where `value_eur IS NULL` disagrees with `is_value_missing`, which
+is exactly what a NULL multiplier produces.
+
+#### Deduplication
+
+Staging deduplicates Fivetran re-ingestion by recency
+(`ORDER BY _fivetran_synced DESC, _file DESC`), which is correct — the same Eurostat
+file re-delivered under a new checksum must collapse to one row.
+
+The facts do **not** deduplicate. An earlier `ROW_NUMBER()` guard partitioned by the
+natural grain and preferred `MIO_EUR`, but the intermediate grain already includes
+`currency`/`unit`, so two rows differing only by unit are legitimately distinct —
+not duplicates. The guard was a no-op that would have silently discarded a real
+anomaly if it ever fired; `unique_combination_of_columns` on the fact grain now
+covers genuine grain violations loudly.
+
+Dimensions keep natural keys and are Type 1 (overwrite), not SCD2: they are Eurostat
+reference/code-list data with no history worth tracking. If history is ever needed it
+belongs on the raw snapshot (`snap_bop_observations`), not the marts.
+
+#### Known Apache Ossie limitations
+
+`dbt/target/osi_document.json` (written at parse time by dbt's MSI→OSI converter)
+is lossy. MetricFlow queries are unaffected, but consumers of the Ossie document
+should know:
+
+| Limitation                                                             | Effect                                                                                                                                                                        |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Entities export as plain unmarked fields                               | Snowflake Semantic Views read join keys as measures. Not fixable in YAML — dbt rejects a name used as both entity and dimension. Declare join keys as dimensions in the view. |
+| `offset_window` is dropped (OSI 0.1.1)                                 | YoY metrics export as `(x - x) / x` → always 0. Treat YoY as MetricFlow-only.                                                                                                 |
+| All 9 semantic models merge into one document                          | Adds 4 fact↔fact relationships on shared entities. Do not consume those edges.                                                                                                |
+| `value_eur` / `is_value_missing` appear only inside metric expressions | Not queryable as dimensions.                                                                                                                                                  |
+| Rewritten only when the semantic manifest validates                    | Needs dbt Cloud / CI with `dbt_cloud.yml`; a local `dbt parse` leaves the file stale.                                                                                         |
+
+`dbt parse`/`dbt build` validate the semantic manifest, and
+`dbt ls --resource-type semantic_model --resource-type metric` runs in CI
+(`dbt-pr.yml`, `dbt.yml`) so a broken definition fails the pipeline.
+
+The compiled `dbt/target/manifest.json` (uploaded as the `prod-manifest` artifact)
+carries all `semantic_models` and `metrics` nodes — this is what BI tools read to
+query governed metrics by name.
 
 ### dbt targets: dev vs prod
 
 dbt runs against two targets defined in the profile (template `dbt/profiles.example.yml`,
 copied to `~/.dbt/profiles.yml` on the host; all secrets via environment variables):
 
-| Target | Warehouse      | Schemas written in `EUROPEAN_SERVICES_ANALYTICS` | Used by                              |
-| ------ | -------------- | ---------------------------------------------- | --------------------------------------- |
-| `dev`  | `TRANSFORM_WH` | `dev_staging`, `dev_intermediate`, `dev_marts` | local development only (default target) |
-| `prod` | `TRANSFORM_WH` | `staging`, `intermediate`, `marts`             | CI/CD on merge to `main` only           |
+| Target | Warehouse      | Schemas written in `EUROPEAN_SERVICES_ANALYTICS` | Used by                                 |
+| ------ | -------------- | ------------------------------------------------ | --------------------------------------- |
+| `dev`  | `TRANSFORM_WH` | `dev_staging`, `dev_intermediate`, `dev_marts`   | local development only (default target) |
+| `prod` | `TRANSFORM_WH` | `staging`, `intermediate`, `marts`               | CI/CD on merge to `main` only           |
 
 - `dev` is the default target (`target: dev` in the profile), so a plain `dbt build` in the
   container can never write the prod schemas.
@@ -146,7 +205,6 @@ Additional datasets:
 - `ext_stec01` — Trade by enterprise size.
 - `ext_stec02` — Trade by enterprise activity.
 - `ext_stec03` — Trade by enterprise ownership.
-- `ext_ser_mos` — Trade by mode of supply.
 
 The analytical focus is European international trade in services, particularly computer, telecommunications and information services.
 

@@ -101,8 +101,12 @@ models:
       - name: is_value_missing
         data_tests: [not_null]
       - name: currency
+        description: "Measurement unit from Eurostat. accepted_values is deliberate: the LEFT JOIN to units.csv turns an unmapped code into a NULL multiplier, and obs_value * NULL silently becomes a NULL value_eur that disappears from every SUM. Without this test a new Eurostat unit would quietly under-report instead of failing the build."
         data_tests:
           - not_null
+          - accepted_values:
+              arguments:
+                values: [MIO_EUR, THS_EUR]
           - relationships:
               arguments:
                 to: ref('units')
@@ -173,8 +177,12 @@ models:
       - name: value_eur
         description: "Observation value converted to euro (THS_EUR x 1000)."
       - name: unit
+        description: "Measurement unit from Eurostat. accepted_values guards against an unmapped code silently nulling value_eur via the units.csv LEFT JOIN — see int_bop_its_6_det.currency."
         data_tests:
           - not_null
+          - accepted_values:
+              arguments:
+                values: [MIO_EUR, THS_EUR]
           - relationships:
               arguments:
                 to: ref('units')

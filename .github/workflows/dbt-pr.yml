@@ -116,6 +116,13 @@ jobs:
 
       # dbt parse validates the semantic manifest (semantic models + metrics);
       # list the semantic-layer resources so a broken definition fails loudly here.
+      #
+      # Note: MetricFlow's own validator (`mf validate-configs`) is deliberately NOT
+      # run in CI. It works inside the Docker image but fails on the CI runner's
+      # bare `uv sync` environment with "cannot use a string pattern on a bytes-like
+      # object" while parsing the manifest, regardless of whether metricflow resolves
+      # to 0.213.x or 0.214.x. Rely on `dbt parse` + `dbt ls` below; run mf manually
+      # inside the container when semantic-layer validation beyond dbt's is needed.
       - name: Validate semantic layer resources
         run: uv run dbt ls --project-dir dbt --target dev --resource-type semantic_model --resource-type metric --output name
 

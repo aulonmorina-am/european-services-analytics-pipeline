@@ -89,6 +89,9 @@ jobs:
         run: uv run dbt docs generate --project-dir dbt --target prod
 
       # Persist the prod manifest so PR (Slim CI) jobs can diff against it with --state/--defer.
+      # semantic_manifest.json + osi_document.json are also uploaded: dbt writes them
+      # at parse time but they are otherwise discarded when the runner is torn down,
+      # which loses the per-deploy record of the semantic layer definition.
       - name: Upload prod manifest artifact
         uses: actions/upload-artifact@v4
         with:
@@ -96,4 +99,6 @@ jobs:
           path: |
             dbt/target/manifest.json
             dbt/target/run_results.json
+            dbt/target/semantic_manifest.json
+            dbt/target/osi_document.json
           retention-days: 30
