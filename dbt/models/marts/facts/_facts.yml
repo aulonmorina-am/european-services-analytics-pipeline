@@ -316,12 +316,12 @@ models:
               ]
     metrics:
       - name: stec_trade_value_eur
-        description: "Sum of observation values in EUR at the reporting grain (service level 1). NULL means confidential/missing and is ignored by SUM — never coalesced to 0. Aggregate levels overlap their members, so this metric always filters to service__is_reporting_level."
+        description: "Sum of observation values in EUR at the reporting grain (NACE section level). NULL means confidential/missing and is ignored by SUM — never coalesced to 0. Aggregate NACE codes (TOTAL, A_B, ...) overlap the sections, so this metric always filters to nace__is_reporting_level."
         label: "STEC trade value (EUR)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('service__is_reporting_level') }} = true"
+        filter: "{{ Dimension('nace__is_reporting_level') }} = true"
       - name: stec_observations
         label: "STEC observations"
         type: simple
@@ -334,19 +334,19 @@ models:
         agg: sum_boolean
         expr: is_value_missing
       - name: stec_exports_eur
-        description: "Exports in EUR at the reporting grain (service level 1). See bop_exports_eur on why the level filter is required."
+        description: "Exports in EUR at the reporting grain (NACE section level). See stec_trade_value_eur on why the level filter is required."
         label: "Exports (EUR)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('flow__flow_direction') }} = 'exports' AND {{ Dimension('service__is_reporting_level') }} = true"
+        filter: "{{ Dimension('flow__flow_direction') }} = 'exports' AND {{ Dimension('nace__is_reporting_level') }} = true"
       - name: stec_imports_eur
-        description: "Imports in EUR at the reporting grain (service level 1). See bop_exports_eur on why the level filter is required."
+        description: "Imports in EUR at the reporting grain (NACE section level). See stec_trade_value_eur on why the level filter is required."
         label: "Imports (EUR)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('flow__flow_direction') }} = 'imports' AND {{ Dimension('service__is_reporting_level') }} = true"
+        filter: "{{ Dimension('flow__flow_direction') }} = 'imports' AND {{ Dimension('nace__is_reporting_level') }} = true"
       - name: stec_net_balance_eur
         description: "Exports minus imports."
         label: "STEC net balance (EUR)"
