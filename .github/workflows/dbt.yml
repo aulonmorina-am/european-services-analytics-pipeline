@@ -77,6 +77,12 @@ jobs:
       - name: Check source freshness
         run: uv run dbt source freshness --project-dir dbt --target prod
 
+      # Seeds are load-once tables: dbt truncates and re-inserts into the existing
+      # table, so a seed whose CSV gains a column fails with "invalid identifier"
+      # against the old schema. full-refresh drops and recreates them.
+      - name: Load seeds (prod target)
+        run: uv run dbt seed --project-dir dbt --target prod --full-refresh
+
       - name: Build and test models (prod target)
         run: uv run dbt build --project-dir dbt --target prod
 

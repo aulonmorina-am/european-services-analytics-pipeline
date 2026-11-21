@@ -130,6 +130,13 @@ jobs:
       # unchanged upstream refs against prod (read-only); --target dev writes the
       # selected models into DEV_* schemas. If no prod manifest exists yet (first
       # PRs), fall back to a full dev-target build.
+      # Seeds are load-once tables: dbt truncates and re-inserts into the existing
+      # table, so a seed whose CSV gains a column fails with "invalid identifier"
+      # against the old schema. full-refresh drops and recreates them. Run first so
+      # the models below see the current columns.
+      - name: Load seeds (dev target)
+        run: uv run dbt seed --project-dir dbt --target dev --full-refresh
+
       - name: Slim CI build (changed models + downstream, dev target)
         run: |
           if [ -f prod_state/manifest.json ]; then

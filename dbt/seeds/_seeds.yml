@@ -13,6 +13,13 @@ seeds:
           - accepted_values:
               arguments:
                 values: ["true", "false"]
+      - name: is_reporting_level
+        description: "TRUE for the BPM6 codes that form the reporting grain (the real service categories). FALSE for SOX, which sits beside them in the hierarchy and would double-count."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["true", "false"]
 
   - name: geo_areas
     columns:
@@ -73,6 +80,13 @@ seeds:
         data_tests: [not_null]
       - name: characteristic_label
         data_tests: [not_null]
+      - name: is_reporting_level
+        description: "TRUE for the EBOPS-2010 service sections only. The size_class and enterprise_control partitions are alternative views of the same population, so their TOTAL rows are FALSE — summing across partitions would triple-count."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["true", "false"]
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
