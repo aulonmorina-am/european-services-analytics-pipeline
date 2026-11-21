@@ -1,142 +1,142 @@
-bop_item,bop_item_label,parent_bop_item,is_ict_service
-S,Services,,false
-SA,Services: manufacturing services on physical inputs owned by others,S,false
-SAY,"Services: goods for processing in reporting economy - goods returned, goods received",SA,false
-SAZ,"Services: goods for processing abroad - goods sent, goods returned",SA,false
-SB,Services: maintenance and repair services n.i.e.,S,false
-SC,Services: transport,S,false
-SC1,Services: sea transport,SC,false
-SC11,Services: sea transport; passenger,SC1,false
-SC12,Services: sea transport; freight,SC1,false
-SC13,Services: sea transport; other than passenger and freight,SC1,false
-SC2,Services: air transport,SC,false
-SC21,Services: air transport; passenger,SC2,false
-SC22,Services: air transport; freight,SC2,false
-SC23,Services: air transport; other than passenger and freight,SC2,false
-SC3,Services: other modes of transport,SC,false
-SC31,Services: other modes of transport; passenger,SC3,false
-SC32,Services: other modes of transport; freight,SC3,false
-SC33,Services: other modes of transport; other than passenger and freight,SC3,false
-SC3A,Services: space transport,SC3,false
-SC3B,Services: rail transport,SC3,false
-SC3B1,Services: rail transport; passenger,SC3B,false
-SC3B2,Services: rail transport; freight,SC3B,false
-SC3B3,Services: rail transport; other than passenger and freight,SC3B,false
-SC3C,Services: road transport,SC3,false
-SC3C1,Services: road transport; passenger,SC3C,false
-SC3C2,Services: road transport; freight,SC3C,false
-SC3C3,Services: road transport; other than passenger and freight,SC3C,false
-SC3D,Services: inland waterway transport,SC3,false
-SC3D1,Services: inland waterway transport; passenger,SC3D,false
-SC3D2,Services: inland waterway transport; freight,SC3D,false
-SC3D3,Services: inland waterway transport; other than passenger and freight,SC3D,false
-SC3E,Services: pipeline transport,SC3,false
-SC3F,Services: electricity transmission,SC3,false
-SC3G,Services: other supporting and auxiliary transport services,SC3,false
-SC4,Services: postal and courier services,SC,false
-SCA,Services: all modes of transport; passenger,SC,false
-SCAZ,"Services: all modes of transport; passenger; of which: payable by border, seasonal, and other short-term workers",SCA,false
-SCB,Services: all modes of transport; freight,SC,false
-SCC,Services: all modes of transport; other than passenger and freight,SC,false
-SCC1,Services: all modes of transport; other than passenger and freight; other than postal and courier services,SCC,false
-SD,Services: travel,S,false
-SD1,Services: travel; goods (travel),SD,false
-SD2,Services: travel; local transport services,SD,false
-SD3,Services: travel; accommodation services,SD,false
-SD4,Services: travel; food-serving services,SD,false
-SD5,"Services: travel; other services than goods (travel), local transport services, accommodation services, and food-serving services",SD,false
-SD5Y,"Services: travel; other services than goods (travel), local transport services, accommodation services, and food-serving services; of which: education services",SD5,false
-SD5Z,"Services: travel; other services than goods (travel), local transport services, accommodation services, and food-serving services; of which: health services",SD5,false
-SDA,Services: travel; business,SD,false
-SDA1,"Services: travel; business; acquisition of goods and services by border, seasonal, and other short-term workers",SDA,false
-SDA2,"Services: travel; business; other than acquisition of goods and services by border, seasonal, and other short-term workers",SDA,false
-SDB,Services: travel; personal,SD,false
-SDB1,Services: travel; personal; health-related,SDB,false
-SDB2,Services: travel; personal; education-related,SDB,false
-SDB3,Services: travel; personal; other than health-related and education-related,SDB,false
-SDZ,Services: tourism-related services in travel and passenger transport,SD,false
-SE,Services: construction,S,false
-SE1,Services: construction abroad,SE,false
-SE2,Services: construction in the reporting economy,SE,false
-SF,Services: insurance and pension services,S,false
-SF1,Services: direct insurance,SF,false
-SF11,Services: life insurance,SF1,false
-SF11Y,Services: gross life insurance premiums receivable (credits) and payable (debits),SF11,false
-SF11Z,Services: gross life insurance claims receivable (credits) and payable (debits),SF11,false
-SF12,Services: freight insurance,SF1,false
-SF12Y,Services: gross freight insurance premiums receivable (credits) and payable (debits),SF12,false
-SF12Z,Services: gross freight insurance claims receivable (credits) and payable (debits),SF12,false
-SF13,Services: direct insurance other than life and freight insurance,SF1,false
-SF13Y,"Services: gross direct insurance (other than life and freight insurance), premiums receivable (credits) and payable (debits)",SF13,false
-SF13Z,"Services: gross direct insurance (other than life and freight insurance), claims receivable (credits) and payable (debits)",SF13,false
-SF2,Services: reinsurance,SF,false
-SF3,Services: auxiliary insurance services,SF,false
-SF4,Services: pension and standardized guarantee services,SF,false
-SF41,Services: pension services,SF4,false
-SF42,Services: standardized guarantee services,SF4,false
-SG,Services: financial services,S,false
-SG1,Services: financial services explicitly charged and other financial services,SG,false
-SG2,Services: financial intermediation services indirectly measured (FISIM),SG,false
-SH,Services: charges for the use of intellectual property n.i.e.,S,false
-SH1,Services: franchises and trademarks licensing fees,SH,false
-SH2,Services: licenses for the use of outcomes of research and development,SH,false
-SH3,Services: licenses to reproduce and/or distribute computer software,SH,false
-SH4,Services: licenses to reproduce and/or distribute audio-visual and related products,SH,false
-SH41,Services: licenses to reproduce and/or distribute audio-visual products,SH4,false
-SH42,Services: licenses to reproduce and/or distribute other than audio-visual products,SH4,false
-SI,"Services: telecommunications, computer, and information services",S,true
-SI1,Services: telecommunications services,SI,true
-SI2,Services: computer services,SI,true
-SI21,Services: computer software,SI2,true
-SI21Z,Services: computer software; of which: software originals,SI21,true
-SI22,Services: computer services other than computer software,SI2,true
-SI3,Services: information services,SI,true
-SI31,Services: news agency services,SI3,true
-SI32,Services: information services other than news agency services,SI3,true
-SJ,Services: other business services,S,false
-SJ1,Services: research and development services,SJ,false
-SJ11,Services: work undertaken on a systematic basis to increase the stock of knowledge,SJ1,false
-SJ111,Services: provision of customized and non-customized research and development services,SJ11,false
-SJ112,Services: sale of proprietary rights arising from research and development,SJ11,false
-SJ1121,Services: patents,SJ112,false
-SJ1122,Services: copyrights arising from research and development,SJ112,false
-SJ1123,Services: industrial processes and designs,SJ112,false
-SJ1124,"Services: sales of proprietary rights arising from research and development other than patents, copyrights arising from research and development and industrial processes and designs",SJ112,false
-SJ12,Services: research and development services other than work undertaken on a systematic basis to increase the stock of knowledge,SJ1,false
-SJ2,Services: professional and management consulting services,SJ,false
-SJ21,"Services: legal, accounting, management consulting, and public relations services",SJ2,false
-SJ211,Services: legal services,SJ21,false
-SJ212,"Services: accounting, auditing, bookkeeping, and tax consulting services",SJ21,false
-SJ213,Services: business and management consulting and public relations services,SJ21,false
-SJ22,"Services: advertising, market research, and public opinion polling services",SJ2,false
-SJ22Z,"Services: advertising, market research, and public opinion polling services; of which: convention, trade-fair and exhibition organization services",SJ22,false
-SJ3,"Services: technical, trade-related, and other business services",SJ,false
-SJ31,"Services: architectural, engineering, scientific, and other technical services",SJ3,false
-SJ311,Services: architectural services,SJ31,false
-SJ312,Services: engineering services,SJ31,false
-SJ313,Services: scientific and other technical services,SJ31,false
-SJ32,"Services: waste treatment and de-pollution, agricultural and mining services",SJ3,false
-SJ321,Services: waste treatment and de-pollution,SJ32,false
-SJ322,"Services: services incidental to agriculture, forestry and fishing",SJ32,false
-SJ323,"Services: services incidental to mining, and oil and gas extraction",SJ32,false
-SJ32X,"Memo grouping: services, services incidental to agriculture and mining",SJ32,false
-SJ33,Services: operating leasing services,SJ3,false
-SJ34,Services: trade-related services,SJ3,false
-SJ35,Services: other business services n.i.e.,SJ3,false
-SJ35Z,"Services: other business services n.i.e.; of which: employment services, i.e., search, placement and supply services of personnel",SJ35,false
-SK,"Services: personal, cultural, and recreational services",S,false
-SK1,Services: audiovisual and related services,SK,false
-SK11,Services: audio-visual services,SK1,false
-SK11Z,Services: audio-visual services; of which: audio-visual originals,SK11,false
-SK12,Services: artistic related services,SK1,false
-SK2,"Services: personal, cultural, and recreational services other than audiovisual and related services",SK,false
-SK21,"Services: personal, cultural, and recreational services other than audiovisual and related services; health services",SK2,false
-SK22,"Services: personal, cultural, and recreational services other than audiovisual and related services; education services",SK2,false
-SK23,"Services: personal, cultural, and recreational services other than audiovisual and related services; heritage and recreational services",SK2,false
-SK24,"Services: personal, cultural, and recreational services other than audiovisual and related services; personal services other than health, education and heritage and recreational services",SK2,false
-SL,Services: government goods and services n.i.e.,S,false
-SL1,Services: embassies and consulates,SL,false
-SL2,Services: military units and agencies,SL,false
-SL3,Services: government goods and services n.i.e. other than embassies and consulates and military units and agencies,SL,false
-SN,Services: services not allocated,S,false
-SOX,Services: commercial services,S,false
+bop_item,bop_item_label,parent_bop_item,is_ict_service,is_reporting_level
+S,Services,,false,false
+SA,Services: manufacturing services on physical inputs owned by others,S,false,true
+SAY,"Services: goods for processing in reporting economy - goods returned, goods received",SA,false,false
+SAZ,"Services: goods for processing abroad - goods sent, goods returned",SA,false,false
+SB,Services: maintenance and repair services n.i.e.,S,false,true
+SC,Services: transport,S,false,true
+SC1,Services: sea transport,SC,false,false
+SC11,Services: sea transport; passenger,SC1,false,false
+SC12,Services: sea transport; freight,SC1,false,false
+SC13,Services: sea transport; other than passenger and freight,SC1,false,false
+SC2,Services: air transport,SC,false,false
+SC21,Services: air transport; passenger,SC2,false,false
+SC22,Services: air transport; freight,SC2,false,false
+SC23,Services: air transport; other than passenger and freight,SC2,false,false
+SC3,Services: other modes of transport,SC,false,false
+SC31,Services: other modes of transport; passenger,SC3,false,false
+SC32,Services: other modes of transport; freight,SC3,false,false
+SC33,Services: other modes of transport; other than passenger and freight,SC3,false,false
+SC3A,Services: space transport,SC3,false,false
+SC3B,Services: rail transport,SC3,false,false
+SC3B1,Services: rail transport; passenger,SC3B,false,false
+SC3B2,Services: rail transport; freight,SC3B,false,false
+SC3B3,Services: rail transport; other than passenger and freight,SC3B,false,false
+SC3C,Services: road transport,SC3,false,false
+SC3C1,Services: road transport; passenger,SC3C,false,false
+SC3C2,Services: road transport; freight,SC3C,false,false
+SC3C3,Services: road transport; other than passenger and freight,SC3C,false,false
+SC3D,Services: inland waterway transport,SC3,false,false
+SC3D1,Services: inland waterway transport; passenger,SC3D,false,false
+SC3D2,Services: inland waterway transport; freight,SC3D,false,false
+SC3D3,Services: inland waterway transport; other than passenger and freight,SC3D,false,false
+SC3E,Services: pipeline transport,SC3,false,false
+SC3F,Services: electricity transmission,SC3,false,false
+SC3G,Services: other supporting and auxiliary transport services,SC3,false,false
+SC4,Services: postal and courier services,SC,false,false
+SCA,Services: all modes of transport; passenger,SC,false,false
+SCAZ,"Services: all modes of transport; passenger; of which: payable by border, seasonal, and other short-term workers",SCA,false,false
+SCB,Services: all modes of transport; freight,SC,false,false
+SCC,Services: all modes of transport; other than passenger and freight,SC,false,false
+SCC1,Services: all modes of transport; other than passenger and freight; other than postal and courier services,SCC,false,false
+SD,Services: travel,S,false,true
+SD1,Services: travel; goods (travel),SD,false,false
+SD2,Services: travel; local transport services,SD,false,false
+SD3,Services: travel; accommodation services,SD,false,false
+SD4,Services: travel; food-serving services,SD,false,false
+SD5,"Services: travel; other services than goods (travel), local transport services, accommodation services, and food-serving services",SD,false,false
+SD5Y,"Services: travel; other services than goods (travel), local transport services, accommodation services, and food-serving services; of which: education services",SD5,false,false
+SD5Z,"Services: travel; other services than goods (travel), local transport services, accommodation services, and food-serving services; of which: health services",SD5,false,false
+SDA,Services: travel; business,SD,false,false
+SDA1,"Services: travel; business; acquisition of goods and services by border, seasonal, and other short-term workers",SDA,false,false
+SDA2,"Services: travel; business; other than acquisition of goods and services by border, seasonal, and other short-term workers",SDA,false,false
+SDB,Services: travel; personal,SD,false,false
+SDB1,Services: travel; personal; health-related,SDB,false,false
+SDB2,Services: travel; personal; education-related,SDB,false,false
+SDB3,Services: travel; personal; other than health-related and education-related,SDB,false,false
+SDZ,Services: tourism-related services in travel and passenger transport,SD,false,false
+SE,Services: construction,S,false,true
+SE1,Services: construction abroad,SE,false,false
+SE2,Services: construction in the reporting economy,SE,false,false
+SF,Services: insurance and pension services,S,false,true
+SF1,Services: direct insurance,SF,false,false
+SF11,Services: life insurance,SF1,false,false
+SF11Y,Services: gross life insurance premiums receivable (credits) and payable (debits),SF11,false,false
+SF11Z,Services: gross life insurance claims receivable (credits) and payable (debits),SF11,false,false
+SF12,Services: freight insurance,SF1,false,false
+SF12Y,Services: gross freight insurance premiums receivable (credits) and payable (debits),SF12,false,false
+SF12Z,Services: gross freight insurance claims receivable (credits) and payable (debits),SF12,false,false
+SF13,Services: direct insurance other than life and freight insurance,SF1,false,false
+SF13Y,"Services: gross direct insurance (other than life and freight insurance), premiums receivable (credits) and payable (debits)",SF13,false,false
+SF13Z,"Services: gross direct insurance (other than life and freight insurance), claims receivable (credits) and payable (debits)",SF13,false,false
+SF2,Services: reinsurance,SF,false,false
+SF3,Services: auxiliary insurance services,SF,false,false
+SF4,Services: pension and standardized guarantee services,SF,false,false
+SF41,Services: pension services,SF4,false,false
+SF42,Services: standardized guarantee services,SF4,false,false
+SG,Services: financial services,S,false,true
+SG1,Services: financial services explicitly charged and other financial services,SG,false,false
+SG2,Services: financial intermediation services indirectly measured (FISIM),SG,false,false
+SH,Services: charges for the use of intellectual property n.i.e.,S,false,true
+SH1,Services: franchises and trademarks licensing fees,SH,false,false
+SH2,Services: licenses for the use of outcomes of research and development,SH,false,false
+SH3,Services: licenses to reproduce and/or distribute computer software,SH,false,false
+SH4,Services: licenses to reproduce and/or distribute audio-visual and related products,SH,false,false
+SH41,Services: licenses to reproduce and/or distribute audio-visual products,SH4,false,false
+SH42,Services: licenses to reproduce and/or distribute other than audio-visual products,SH4,false,false
+SI,"Services: telecommunications, computer, and information services",S,true,true
+SI1,Services: telecommunications services,SI,true,false
+SI2,Services: computer services,SI,true,false
+SI21,Services: computer software,SI2,true,false
+SI21Z,Services: computer software; of which: software originals,SI21,true,false
+SI22,Services: computer services other than computer software,SI2,true,false
+SI3,Services: information services,SI,true,false
+SI31,Services: news agency services,SI3,true,false
+SI32,Services: information services other than news agency services,SI3,true,false
+SJ,Services: other business services,S,false,true
+SJ1,Services: research and development services,SJ,false,false
+SJ11,Services: work undertaken on a systematic basis to increase the stock of knowledge,SJ1,false,false
+SJ111,Services: provision of customized and non-customized research and development services,SJ11,false,false
+SJ112,Services: sale of proprietary rights arising from research and development,SJ11,false,false
+SJ1121,Services: patents,SJ112,false,false
+SJ1122,Services: copyrights arising from research and development,SJ112,false,false
+SJ1123,Services: industrial processes and designs,SJ112,false,false
+SJ1124,"Services: sales of proprietary rights arising from research and development other than patents, copyrights arising from research and development and industrial processes and designs",SJ112,false,false
+SJ12,Services: research and development services other than work undertaken on a systematic basis to increase the stock of knowledge,SJ1,false,false
+SJ2,Services: professional and management consulting services,SJ,false,false
+SJ21,"Services: legal, accounting, management consulting, and public relations services",SJ2,false,false
+SJ211,Services: legal services,SJ21,false,false
+SJ212,"Services: accounting, auditing, bookkeeping, and tax consulting services",SJ21,false,false
+SJ213,Services: business and management consulting and public relations services,SJ21,false,false
+SJ22,"Services: advertising, market research, and public opinion polling services",SJ2,false,false
+SJ22Z,"Services: advertising, market research, and public opinion polling services; of which: convention, trade-fair and exhibition organization services",SJ22,false,false
+SJ3,"Services: technical, trade-related, and other business services",SJ,false,false
+SJ31,"Services: architectural, engineering, scientific, and other technical services",SJ3,false,false
+SJ311,Services: architectural services,SJ31,false,false
+SJ312,Services: engineering services,SJ31,false,false
+SJ313,Services: scientific and other technical services,SJ31,false,false
+SJ32,"Services: waste treatment and de-pollution, agricultural and mining services",SJ3,false,false
+SJ321,Services: waste treatment and de-pollution,SJ32,false,false
+SJ322,"Services: services incidental to agriculture, forestry and fishing",SJ32,false,false
+SJ323,"Services: services incidental to mining, and oil and gas extraction",SJ32,false,false
+SJ32X,"Memo grouping: services, services incidental to agriculture and mining",SJ32,false,false
+SJ33,Services: operating leasing services,SJ3,false,false
+SJ34,Services: trade-related services,SJ3,false,false
+SJ35,Services: other business services n.i.e.,SJ3,false,false
+SJ35Z,"Services: other business services n.i.e.; of which: employment services, i.e., search, placement and supply services of personnel",SJ35,false,false
+SK,"Services: personal, cultural, and recreational services",S,false,true
+SK1,Services: audiovisual and related services,SK,false,false
+SK11,Services: audio-visual services,SK1,false,false
+SK11Z,Services: audio-visual services; of which: audio-visual originals,SK11,false,false
+SK12,Services: artistic related services,SK1,false,false
+SK2,"Services: personal, cultural, and recreational services other than audiovisual and related services",SK,false,false
+SK21,"Services: personal, cultural, and recreational services other than audiovisual and related services; health services",SK2,false,false
+SK22,"Services: personal, cultural, and recreational services other than audiovisual and related services; education services",SK2,false,false
+SK23,"Services: personal, cultural, and recreational services other than audiovisual and related services; heritage and recreational services",SK2,false,false
+SK24,"Services: personal, cultural, and recreational services other than audiovisual and related services; personal services other than health, education and heritage and recreational services",SK2,false,false
+SL,Services: government goods and services n.i.e.,S,false,true
+SL1,Services: embassies and consulates,SL,false,false
+SL2,Services: military units and agencies,SL,false,false
+SL3,Services: government goods and services n.i.e. other than embassies and consulates and military units and agencies,SL,false,false
+SN,Services: services not allocated,S,false,true
+SOX,Services: commercial services,S,false,false

@@ -9,6 +9,7 @@ SELECT
     characteristic_type || '-' || characteristic_code AS characteristic_key,
     characteristic_type,
     characteristic_code,
+    characteristic_is_reporting_level,
     nace_r_2,
     trade_flow AS flow_code,
     partner,

@@ -2,9 +2,12 @@
 -- service_level: 0 = total 'S', 1 = sections (SA..SZ), 2-3 = sub-items (SI, SI2, SI21Z...).
 -- Never sum across levels: 'S' already contains SI* etc.
 -- The BPM6 hierarchy nests, so a level-1 section already contains all its
--- children: summing across levels multiplies the total. Level 1 (SA..SZ) is
--- the reporting grain every value metric filters to, so consumers never have
--- to know the level number.
+-- children: summing across levels multiplies the total.
+--
+-- is_reporting_level is NOT "service_level = 1". SOX ("commercial services") is a
+-- level-1 child of S whose value equals the sum of its 11 siblings, so it overlaps
+-- them. The seed declares the reporting grain explicitly to keep SOX out of it;
+-- summing all 14 level-1 children over-counts exports by ~42%.
 WITH RECURSIVE hierarchy AS (
 
     SELECT
@@ -32,7 +35,7 @@ SELECT
     item.parent_bop_item,
     hierarchy.service_level,
     item.is_ict_service,
-    hierarchy.service_level = 1 AS is_reporting_level
+    item.is_reporting_level
 FROM {{ ref('int_bop_item') }} item
 LEFT JOIN hierarchy
     ON hierarchy.bop_item = item.bop_item

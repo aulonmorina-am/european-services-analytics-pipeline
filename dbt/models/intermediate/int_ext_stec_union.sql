@@ -81,6 +81,7 @@ SELECT
     unioned.characteristic_type,
     unioned.characteristic_code,
     c.characteristic_label,
+    c.is_reporting_level AS characteristic_is_reporting_level,
     unioned.frequency,
     f.frequency_label,
     unioned.unit,

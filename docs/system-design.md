@@ -92,6 +92,29 @@ Three rules are repeated in metric and dimension descriptions:
   SA..SZ). This is baked into the metric, not left to BI: `bop_exports_eur` without
   it sums all six hierarchy levels and over-counts roughly 3x, so exports would
   appear larger than total trade.
+- `is_reporting_level` is **declared in the seed**, not inferred from hierarchy
+  position. `SOX` ("commercial services") is a level-1 child of `S` whose value
+  equals the sum of its 11 siblings, so it is flagged `false`; deriving the flag
+  from `service_level = 1` would sum 14 overlapping children and over-count BOP
+  exports by ~42%.
+- STEC value metrics additionally filter to `characteristic_is_reporting_level`.
+  `ext_stec01/02/03` are three independent partitions of the same population, so
+  summing all three triple-counts. The flag marks the additive grain of **one**
+  partition only: the 13 EBOPS-2010 service sections (SA..SN). The `size_class` and
+  `enterprise_control` partitions are alternative views of the same euros and are
+  flagged `false`; their `TOTAL` rows are not a third dimension to add.
+- Reporter and partner are **populations, not hierarchies**, so they are not
+  guarded by a boolean. Every base metric instead pins both: `geo__is_eu_aggregate
+= false` (one reporter level — `EU27_2020` overlaps its members) and
+  `partner__partner_type = 'country'` (one partner level — `WRL_REST`,
+  `EXT_EU27_2020` and the regional aggregates overlap theirs). Without these two
+  filters each euro is counted once per overlapping aggregate: BOP exports inflate
+  ~5x and STEC ~4.9x. A boolean cannot express "EU27 to the world", so the filter
+  is the grain definition.
+- `*_eu27` variants deliberately read the bloc row (`geo = 'EU27_2020'` with
+  `partner = 'WRL_REST'`) — the bloc's own reported total, counted once. Use them
+  for EU-level headline cards; never combine them with the base metrics, which sum
+  member reporters.
 
 #### Surrogate keys
 
@@ -274,3 +297,13 @@ Directories and implementation files will be introduced as development progresse
 - Automated testing and validation.
 - Secure credential management.
 - Cost-conscious cloud resource usage.
+
+## 9. Power BI Layer
+
+Key constraints carried into the report layer:
+
+- Every value measure bakes in all its grain filters: the reporting-level flags (`service__is_reporting_level`, `characteristic_is_reporting_level`, `nace__is_reporting_level`) **and** the reporter/partner population filters (`geo__is_eu_aggregate = false`, `partner__partner_type = 'country'`), matching the semantic layer.
+- Aggregate rows in `dim_geo` (`EU27_2020`) and `dim_partner` (`EXT_EU27_2020`, `WRL_REST`) are never summed together with the rows they aggregate. The base measures enforce this with the population filters above; the `*_eu27` variants read the bloc row explicitly and must not be combined with them.
+- Share measures cannot inherit the semantic layer's protection: MetricFlow's metric filter scopes only the numerator, so a share queried with a slice on the share axis collapses to 100%. In DAX the denominator must be protected with `REMOVEFILTERS` on the sliced dimension.
+- BOP and STEC measures are never mixed in one visual.
+- The report is saved as PBIP so it is version-controlled alongside the dbt project.
