@@ -170,16 +170,17 @@ models:
           - name: bop_exports_eur
             alias: total_exports
       - name: bop_extra_eu_exports_share
-        description: "Share of exports with extra-EU27 partner aggregates of total exports. Implemented as derived (aliased inputs) rather than ratio — see bop_ict_exports_share."
+        description: "Share of exports to non-EU countries of total exports to countries. Both numerator and denominator are restricted to partner__partner_type = 'country' so the populations match (aggregate rows such as EXT_EU27_2020 and WRL_REST overlap the countries they contain). Implemented as derived (aliased inputs) rather than ratio — see bop_ict_exports_share."
         label: "Extra-EU share of exports"
         type: derived
-        expr: extra_eu_exports / nullif(total_exports, 0)
+        expr: extra_eu_exports / nullif(total_country_exports, 0)
         input_metrics:
           - name: bop_exports_eur
             alias: extra_eu_exports
-            filter: "{{ Dimension('partner__is_extra_eu_aggregate') }} = true"
+            filter: "{{ Dimension('partner__partner_type') }} = 'country' AND {{ Dimension('partner__is_eu_member') }} = false"
           - name: bop_exports_eur
-            alias: total_exports
+            alias: total_country_exports
+            filter: "{{ Dimension('partner__partner_type') }} = 'country'"
 
   - name: fct_stec_services_trade
     description: "Fact: services trade by enterprise characteristics (ext_stec01/02/03), one row per year x characteristic x nace x flow x partner x geo, value in EUR."
