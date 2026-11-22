@@ -82,12 +82,12 @@ and two EU27 aggregate-row variants.
 Four rules govern every value metric. They are all baked into the metric
 definitions, never left to BI:
 
-| Rule | Why |
-| ---- | --- |
+| Rule                                                          | Why                                                                                                                                                                                                                                                                              |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `*__is_reporting_level` flags (service, NACE, characteristic) | Each dimension nests totals over their members. `SOX` sits beside the 13 BPM6 sections; `TOTAL`/`A_B`/`UNK` beside the NACE sections; the STEC `size_class` and `enterprise_control` partitions are alternative cuts of the same population. Summing across a level over-counts. |
-| `geo__is_eu_aggregate = false` | `EU27_2020` is a pre-computed row that overlaps the member rows. |
-| `partner__partner_code = 'WRL_REST'` | `WRL_REST`, `EXT_EU27_2020`, `EU27_2020` and the regional aggregates all overlap. |
-| NULL `value_eur` | Marks confidential/missing. SUM skips it; never coalesce to 0. |
+| `geo__is_eu_aggregate = false`                                | `EU27_2020` is a pre-computed row that overlaps the member rows.                                                                                                                                                                                                                 |
+| `partner__partner_code = 'WRL_REST'`                          | `WRL_REST`, `EXT_EU27_2020`, `EU27_2020` and the regional aggregates all overlap.                                                                                                                                                                                                |
+| NULL `value_eur`                                              | Marks confidential/missing. SUM skips it; never coalesce to 0.                                                                                                                                                                                                                   |
 
 The flags are **declared in the seeds**, not inferred from position. `SOX` is a
 level-1 child of `S` but duplicates its 11 siblings, so deriving the flag from
@@ -234,6 +234,7 @@ and manual dispatch only.
 european-services-trade-analytics/
 ├── .github/
 │   └── workflows/
+├── assets/
 ├── config/
 ├── src/
 │   └── extract/
@@ -249,21 +250,7 @@ european-services-trade-analytics/
 └── uv.lock
 ```
 
-Directories and implementation files are introduced as development progresses.
-
-## 7. Implementation Sequence
-
-1. ~~Python project and Dev Container setup.~~
-2. ~~Eurostat API client and extractor.~~
-3. ~~ADLS Gen2 integration.~~
-4. ~~Fivetran connector configuration.~~
-5. ~~Snowflake setup and ingestion validation.~~
-6. ~~dbt project initialization.~~
-7. ~~Data transformation and modeling.~~
-8. ~~GitHub Actions orchestration and CI/CD.~~
-9. Power BI semantic model and dashboards — in progress.
-
-## 8. Engineering Principles
+## 7. Engineering Principles
 
 - Modular and maintainable implementation.
 - Clear separation of pipeline responsibilities.
@@ -273,7 +260,7 @@ Directories and implementation files are introduced as development progresses.
 - Secure credential management.
 - Cost-conscious cloud resource usage.
 
-## 9. Power BI Layer
+## 8. Power BI Layer
 
 The report layer mirrors the semantic layer's grain rules (see §3) — every value
 measure bakes in the same reporting-level, reporter and partner filters, and never
