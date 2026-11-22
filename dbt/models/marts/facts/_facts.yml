@@ -181,13 +181,14 @@ models:
           - name: bop_exports_eur
             alias: total_country_exports
       # ---------------------------------------------------------------------
-      # Bloc-level variant. The base metric always keeps one reporter and one
-      # partner level. This variant deliberately reads the EU27_2020 reporter
-      # row with WRL_REST as the partner: the bloc's own reported total.
+      # EU27 aggregate-row variant. Eurostat ships EU27_2020 as a pre-computed
+      # row alongside the 27 member rows. The base metric excludes it (one
+      # reporter level only), so this variant reads it directly: geo =
+      # 'EU27_2020' with WRL_REST as the partner.
       # ---------------------------------------------------------------------
       - name: bop_exports_eur_eu27
-        description: "EU27 bloc exports to the world: the EU27_2020 reporter row with WRL_REST as partner. Counted once — do not combine with bop_exports_eur (which sums member reporters)."
-        label: "BOP exports (EUR, EU27 bloc)"
+        description: "EU27 total exports to the world, read from the pre-computed EU27_2020 row with WRL_REST as partner. Counted once. Do not combine with bop_exports_eur, which sums the 27 member reporters instead and returns a smaller figure — member rows exclude unallocated and confidential value."
+        label: "BOP exports (EUR, EU27 aggregate row)"
         type: simple
         agg: sum
         expr: value_eur
@@ -398,16 +399,15 @@ models:
           - name: stec_exports_eur
             alias: total_exports
       # ---------------------------------------------------------------------
-      # Bloc-level variants. The base metrics above always keep one reporter
-      # and one partner level, so they never count the EU27 aggregate row.
-      # These variants deliberately read the EU27_2020 reporter row with
-      # WRL_REST as the partner: the bloc's own reported total, counted once.
-      # Use them for EU-level headline cards; use the base metrics for
-      # reporter comparisons and partner breakdowns.
+      # EU27 aggregate-row variant. Eurostat ships EU27_2020 as a pre-computed
+      # row alongside the member rows. The base metrics exclude it (one reporter
+      # level only), so this variant reads it directly: geo = 'EU27_2020' with
+      # WRL_REST as the partner. Use it for EU-level headline cards; use the
+      # base metrics for reporter comparisons and partner breakdowns.
       # ---------------------------------------------------------------------
       - name: stec_exports_eur_eu27
-        description: "EU27 bloc exports to the world: the EU27_2020 reporter row with WRL_REST as partner. Counted once — do not combine with stec_exports_eur (which sums member reporters)."
-        label: "STEC exports (EUR, EU27 bloc)"
+        description: "EU27 total exports to the world, read from the pre-computed EU27_2020 row with WRL_REST as partner. Counted once. Do not combine with stec_exports_eur, which sums the member reporters instead."
+        label: "STEC exports (EUR, EU27 aggregate row)"
         type: simple
         agg: sum
         expr: value_eur

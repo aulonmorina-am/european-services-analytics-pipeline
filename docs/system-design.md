@@ -111,10 +111,11 @@ Three rules are repeated in metric and dimension descriptions:
   filters each euro is counted once per overlapping aggregate: BOP exports inflate
   ~5x and STEC ~4.9x. A boolean cannot express "EU27 to the world", so the filter
   is the grain definition.
-- `*_eu27` variants deliberately read the bloc row (`geo = 'EU27_2020'` with
-  `partner = 'WRL_REST'`) — the bloc's own reported total, counted once. Use them
-  for EU-level headline cards; never combine them with the base metrics, which sum
-  member reporters.
+- `*_eu27` variants read the pre-computed EU27 row (`geo = 'EU27_2020'` with
+  `partner = 'WRL_REST'`), counted once. Use them for EU-level headline cards;
+  never combine them with the base metrics, which sum the 27 member reporters
+  instead and return a smaller figure (member rows exclude unallocated and
+  confidential value).
 
 #### Surrogate keys
 
