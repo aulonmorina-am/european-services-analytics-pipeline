@@ -172,7 +172,7 @@ models:
           type: categorical
 
   - name: dim_nace_activity
-    description: "Economic activity dimension (NACE rev. 2) for the stec fact; nace_section is the one-letter section."
+    description: "Economic activity dimension (NACE rev. 2) for the stec fact. Codes are a mix of single sections (J = information & communication) and grouped ones (A_B, D_E, I_L_O-U); only single sections are additive."
     semantic_model:
       enabled: true
     columns:
@@ -189,13 +189,8 @@ models:
         dimension:
           type: categorical
           label: "NACE activity"
-      - name: nace_section
-        data_tests: [not_null]
-        dimension:
-          type: categorical
-          label: "NACE section"
       - name: is_reporting_level
-        description: "True for the 1-char section codes — the reporting grain of the stec fact. Aggregate codes (A_B, D_E, UNK, TOTAL, I_L_O-U) overlap the sections, so STEC value metrics filter to this. Use this instead of hardcoding a code-length rule."
+        description: "True for the single-section codes — the additive grain of the stec fact. Grouped codes (A_B, D_E, I_L_O-U) and TOTAL/UNK overlap them, so STEC value metrics filter to this."
         data_tests: [not_null]
         dimension:
           type: categorical

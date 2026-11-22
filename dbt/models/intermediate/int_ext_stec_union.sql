@@ -87,7 +87,6 @@ SELECT
     unioned.unit,
     unioned.nace_r_2,
     n.nace_r_2_label,
-    n.nace_section,
     unioned.trade_flow,
     fl.flow_label AS trade_flow_label,
     fl.flow_direction,

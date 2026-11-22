@@ -400,7 +400,7 @@ models:
         input_metrics:
           - name: stec_exports_eur
             alias: j_sector_exports
-            filter: "{{ Dimension('nace__nace_section') }} = 'J'"
+            filter: "{{ Dimension('nace__nace_code') }} = 'J'"
           - name: stec_exports_eur
             alias: total_exports
       # ---------------------------------------------------------------------
