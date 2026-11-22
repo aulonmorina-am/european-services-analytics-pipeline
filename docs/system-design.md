@@ -66,9 +66,7 @@ RAW → STAGING → INTERMEDIATE → MARTS
   `dim_nace_activity`, `dim_enterprise_characteristic`, fed by
   `fct_bop_services_trade` (year × service × flow × partner × geo) and
   `fct_stec_services_trade` (year × characteristic × NACE × flow × partner × geo).
-  Facts are long-grain, values in EUR; NULL `value_eur` marks confidential/missing
-  observations and is never coalesced to 0. Aggregate levels (EU27, service total,
-  partner aggregates) overlap their members — BI must filter to one level.
+  Facts are long-grain, values in EUR.
 
 ### Semantic layer (dbt Semantic Layer / MetricFlow)
 
@@ -76,46 +74,31 @@ Every mart model carries an inline `semantic_model` block (dbt v1.12+ spec) in
 `dbt/models/marts/**/_*.yml`. Entities join facts to dims; `year_start` (Jan 1) on
 `dim_year` is both the time dimension and the MetricFlow time spine.
 
-The two facts carry 18 metrics: trade value, observation and missing-observation
+The two facts carry 21 metrics: trade value, observation and missing-observation
 counts; exports/imports/balance (via `flow__flow_direction`); derived net balance
-and YoY growth (`offset_window: 1 year`); and three share metrics (ICT share,
-extra-EU share, stec NACE section J share). The share metrics are `derived` rather
-than `ratio` — a ratio whose numerator and denominator are the same metric compiles
-to two identically-named CTE columns and Snowflake raises `ambiguous column name`.
+and YoY growth (`offset_window: 1 year`); three share metrics; a partner breakdown;
+and two EU27 aggregate-row variants.
 
-Three rules are repeated in metric and dimension descriptions:
+Four rules govern every value metric. They are all baked into the metric
+definitions, never left to BI:
 
-- NULL `value_eur` means confidential/missing — SUM skips it; never coalesce to 0.
-- Aggregate levels (EU27, service total, partner aggregates) overlap their members
-  — never sum a level together with its members.
-- Value metrics filter to `service__is_reporting_level` (BPM6 level 1, sections
-  SA..SZ). This is baked into the metric, not left to BI: `bop_exports_eur` without
-  it sums all six hierarchy levels and over-counts roughly 3x, so exports would
-  appear larger than total trade.
-- `is_reporting_level` is **declared in the seed**, not inferred from hierarchy
-  position. `SOX` ("commercial services") is a level-1 child of `S` whose value
-  equals the sum of its 11 siblings, so it is flagged `false`; deriving the flag
-  from `service_level = 1` would sum 14 overlapping children and over-count BOP
-  exports by ~42%.
-- STEC value metrics additionally filter to `characteristic_is_reporting_level`.
-  `ext_stec01/02/03` are three independent partitions of the same population, so
-  summing all three triple-counts. The flag marks the additive grain of **one**
-  partition only: the 13 EBOPS-2010 service sections (SA..SN). The `size_class` and
-  `enterprise_control` partitions are alternative views of the same euros and are
-  flagged `false`; their `TOTAL` rows are not a third dimension to add.
-- Reporter and partner are **populations, not hierarchies**, so they are not
-  guarded by a boolean. Every base metric instead pins both: `geo__is_eu_aggregate
-= false` (one reporter level — `EU27_2020` overlaps its members) and
-  `partner__partner_type = 'country'` (one partner level — `WRL_REST`,
-  `EXT_EU27_2020` and the regional aggregates overlap theirs). Without these two
-  filters each euro is counted once per overlapping aggregate: BOP exports inflate
-  ~5x and STEC ~4.9x. A boolean cannot express "EU27 to the world", so the filter
-  is the grain definition.
-- `*_eu27` variants read the pre-computed EU27 row (`geo = 'EU27_2020'` with
-  `partner = 'WRL_REST'`), counted once. Use them for EU-level headline cards;
-  never combine them with the base metrics, which sum the 27 member reporters
-  instead and return a smaller figure (member rows exclude unallocated and
-  confidential value).
+| Rule | Why |
+| ---- | --- |
+| `*__is_reporting_level` flags (service, NACE, characteristic) | Each dimension nests totals over their members. `SOX` sits beside the 13 BPM6 sections; `TOTAL`/`A_B`/`UNK` beside the NACE sections; the STEC `size_class` and `enterprise_control` partitions are alternative cuts of the same population. Summing across a level over-counts. |
+| `geo__is_eu_aggregate = false` | `EU27_2020` is a pre-computed row that overlaps the member rows. |
+| `partner__partner_code = 'WRL_REST'` | `WRL_REST`, `EXT_EU27_2020`, `EU27_2020` and the regional aggregates all overlap. |
+| NULL `value_eur` | Marks confidential/missing. SUM skips it; never coalesce to 0. |
+
+The flags are **declared in the seeds**, not inferred from position. `SOX` is a
+level-1 child of `S` but duplicates its 11 siblings, so deriving the flag from
+`service_level = 1` would over-count BOP exports by ~42%.
+
+Reporter and partner are **populations, not hierarchies**, so no boolean can
+express them — the filter is the grain definition. Pinning `WRL_REST` (present for
+every reporter: 38/38 BOP, 30/30 STEC) rather than `partner_type = 'country'`
+(available for only 5 of 30 STEC reporters) is what keeps STEC from silently
+dropping 25 reporters. Partner-country detail lives in the `*_by_partner` metric,
+and the `*_eu27` variants read the pre-computed EU27 row for headline cards.
 
 #### Surrogate keys
 
@@ -192,9 +175,6 @@ copied to `~/.dbt/profiles.yml` on the host; all secrets via environment variabl
 - The `dev_` prefix is applied by `dbt/macros/generate_schema_name.sql` whenever
   `target.name == 'dev'`; the layer schemas come from the `+schema` configs in `dbt_project.yml`.
 - Both targets read sources from the shared, Fivetran-owned `RAW` database (read-only).
-- Local loop (from the repo root):
-  `docker compose run --rm dbt dbt build --select <model>`,
-  `dbt test --select <model>`, `dbt show --select <model> --limit 20` — all land in `dev_*`.
 - Production deploys **only** via GitHub Actions on `main` (`.github/workflows/dbt.yml` runs
   `dbt build --target prod` and uploads `target/manifest.json` as the `prod-manifest` artifact).
   The workflow's `workflow_dispatch` is restricted to `main` and the job has an
@@ -211,12 +191,6 @@ copied to `~/.dbt/profiles.yml` on the host; all secrets via environment variabl
   Lint/tests must pass before the Slim CI job starts (`needs:`).
   Required GitHub secrets: `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_ROLE`,
   `DBT_SNOWFLAKE_PRIVATE_KEY`, `DBT_PRIVATE_KEY_PASSPHRASE`.
-- One-time Snowflake setup for the dev environment (run as `ACCOUNTADMIN`, replace `DBT_ROLE`):
-
-  ```sql
-  -- The dbt role already owns EUROPEAN_SERVICES_ANALYTICS, so it can create the
-  -- dev_* schemas itself. Both targets use TRANSFORM_WH (see the table above).
-  ```
 
 ## 4. Data Sources
 
@@ -246,13 +220,13 @@ GitHub Actions coordinates the execution of the pipeline:
 
 1. GitHub Actions (monthly cron or manual dispatch) runs the Python extractor.
 2. Extracted files are uploaded to ADLS Gen2.
-3. Fivetran polls ADLS Gen2 on its own schedule (managed Azure Blob Storage connector) and loads new files into Snowflake RAW database.
-4. dbt transforms data within Snowflake and compiles the semantic manifest
-   (semantic models + metrics in `dbt/target/manifest.json`).
-5. The BI tool consumes the analytical models / governed metrics.
+3. Fivetran polls ADLS Gen2 on its own schedule (managed Azure Blob Storage connector) and loads new files into the Snowflake RAW database.
+4. dbt transforms the data and compiles the semantic manifest.
+5. The BI tool consumes the marts and governed metrics.
 
-CI/CD workflows independently validate project code and dbt models: `.github/workflows/dbt.yml`
-deploys with `dbt build --target prod` on merges to `main` (and manual dispatch) only.
+CI/CD runs alongside it: `.github/workflows/dbt-pr.yml` lints and builds on pull
+requests, and `dbt.yml` deploys with `dbt build --target prod` on merges to `main`
+and manual dispatch only.
 
 ## 6. Repository Structure
 
@@ -275,19 +249,19 @@ european-services-trade-analytics/
 └── uv.lock
 ```
 
-Directories and implementation files will be introduced as development progresses.
+Directories and implementation files are introduced as development progresses.
 
 ## 7. Implementation Sequence
 
-1. Python project and Dev Container setup.
-2. Eurostat API client and extractor.
-3. ADLS Gen2 integration.
-4. Fivetran connector configuration.
-5. Snowflake setup and ingestion validation.
-6. dbt project initialization.
-7. Data transformation and modeling.
-8. GitHub Actions orchestration and CI/CD.
-9. Power BI semantic model and dashboards.
+1. ~~Python project and Dev Container setup.~~
+2. ~~Eurostat API client and extractor.~~
+3. ~~ADLS Gen2 integration.~~
+4. ~~Fivetran connector configuration.~~
+5. ~~Snowflake setup and ingestion validation.~~
+6. ~~dbt project initialization.~~
+7. ~~Data transformation and modeling.~~
+8. ~~GitHub Actions orchestration and CI/CD.~~
+9. Power BI semantic model and dashboards — in progress.
 
 ## 8. Engineering Principles
 
@@ -301,10 +275,12 @@ Directories and implementation files will be introduced as development progresse
 
 ## 9. Power BI Layer
 
-Key constraints carried into the report layer:
+The report layer mirrors the semantic layer's grain rules (see §3) — every value
+measure bakes in the same reporting-level, reporter and partner filters, and never
+sums an aggregate row together with the members it contains. Beyond that:
 
-- Every value measure bakes in all its grain filters: the reporting-level flags (`service__is_reporting_level`, `characteristic_is_reporting_level`, `nace__is_reporting_level`) **and** the reporter/partner population filters (`geo__is_eu_aggregate = false`, `partner__partner_type = 'country'`), matching the semantic layer.
-- Aggregate rows in `dim_geo` (`EU27_2020`) and `dim_partner` (`EXT_EU27_2020`, `WRL_REST`) are never summed together with the rows they aggregate. The base measures enforce this with the population filters above; the `*_eu27` variants read the bloc row explicitly and must not be combined with them.
-- Share measures cannot inherit the semantic layer's protection: MetricFlow's metric filter scopes only the numerator, so a share queried with a slice on the share axis collapses to 100%. In DAX the denominator must be protected with `REMOVEFILTERS` on the sliced dimension.
+- Share measures cannot inherit MetricFlow's protection: a metric filter scopes only
+  the numerator, so a share sliced on its own axis collapses to 100%. In DAX the
+  denominator needs `REMOVEFILTERS` on the sliced dimension.
 - BOP and STEC measures are never mixed in one visual.
 - The report is saved as PBIP so it is version-controlled alongside the dbt project.

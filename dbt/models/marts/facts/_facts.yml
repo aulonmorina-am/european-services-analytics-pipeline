@@ -99,12 +99,12 @@ models:
             combination_of_columns: [year, bop_item, flow_code, partner, geo]
     metrics:
       - name: bop_trade_value_eur
-        description: "Sum of observation values in EUR at the reporting grain. NULL means confidential/missing and is ignored by SUM — never coalesced to 0. Three filters are required: service__is_reporting_level keeps only the BPM6 sections (S and its sub-items overlap); geo__is_eu_aggregate = false keeps one reporter level (EU27_2020 overlaps its member countries); partner__partner_type = 'country' keeps one partner level (WRL_REST, EXT_EU27_2020 and the regional aggregates overlap their members). Without the partner/geo filters each euro is counted once per overlapping aggregate, inflating the total ~5x."
+        description: "Sum of values in EUR at the reporting grain: BPM6 sections, one reporter, partner pinned to WRL_REST."
         label: "BOP trade value (EUR)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('service__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_type') }} = 'country'"
+        filter: "{{ Dimension('service__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_code') }} = 'WRL_REST'"
       - name: bop_observations
         label: "BOP observations"
         type: simple
@@ -117,26 +117,26 @@ models:
         agg: sum_boolean
         expr: is_value_missing
       - name: bop_exports_eur
-        description: "Exports in EUR at the reporting grain. Filters to exports AND all three grain filters — service__is_reporting_level (BPM6 sections), geo__is_eu_aggregate = false (one reporter) and partner__partner_type = 'country' (one partner level). Without them each euro is counted once per overlapping aggregate, over-counting ~5x."
-        label: "Exports (EUR, BPM6 credit)"
+        description: "Exports in EUR at the reporting grain: each reporter's total to the world. Use bop_exports_eur_by_partner for partner breakdowns."
+        label: "Exports (EUR, BPM6)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('flow__flow_direction') }} = 'exports' AND {{ Dimension('service__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_type') }} = 'country'"
+        filter: "{{ Dimension('flow__flow_direction') }} = 'exports' AND {{ Dimension('service__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_code') }} = 'WRL_REST'"
       - name: bop_imports_eur
-        description: "Imports in EUR at the reporting grain. See bop_exports_eur on why the three grain filters are required."
-        label: "Imports (EUR, BPM6 debit)"
+        description: "Imports in EUR at the reporting grain: each reporter's total from the world."
+        label: "Imports (EUR, BPM6)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('flow__flow_direction') }} = 'imports' AND {{ Dimension('service__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_type') }} = 'country'"
+        filter: "{{ Dimension('flow__flow_direction') }} = 'imports' AND {{ Dimension('service__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_code') }} = 'WRL_REST'"
       - name: bop_balance_eur
-        description: "Balance flows (BAL) in EUR at the reporting grain. See bop_exports_eur on why the three grain filters are required."
+        description: "Balance flows (BAL) in EUR at the reporting grain."
         label: "Balance (EUR, BPM6)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('flow__flow_direction') }} = 'balance' AND {{ Dimension('service__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_type') }} = 'country'"
+        filter: "{{ Dimension('flow__flow_direction') }} = 'balance' AND {{ Dimension('service__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_code') }} = 'WRL_REST'"
       - name: bop_net_balance_eur
         description: "Exports minus imports; should reconcile with bop_balance_eur."
         label: "BOP net balance (EUR)"
@@ -159,7 +159,7 @@ models:
             alias: exports_prev_year
             offset_window: 1 year
       - name: bop_ict_exports_share
-        description: "Share of exports going to ICT services (SI*: telecom, computer, information) of total exports. Implemented as derived (aliased inputs) rather than ratio — a ratio over the same metric twice compiles to two identically-named CTE columns and Snowflake raises 'ambiguous column name'."
+        description: "Share of exports going to ICT services (SI*). Derived rather than ratio: a ratio over the same metric twice compiles to duplicate CTE columns and Snowflake rejects it."
         label: "ICT share of exports"
         type: derived
         expr: ict_exports / nullif(total_exports, 0)
@@ -169,25 +169,30 @@ models:
             filter: "{{ Dimension('service__is_ict_service') }} = true"
           - name: bop_exports_eur
             alias: total_exports
+      - name: bop_exports_eur_by_partner
+        description: "Exports in EUR by partner country. A breakdown, not a headline total — country rows exclude unallocated and confidential value."
+        label: "Exports by partner (EUR)"
+        type: simple
+        agg: sum
+        expr: value_eur
+        filter: "{{ Dimension('flow__flow_direction') }} = 'exports' AND {{ Dimension('service__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_type') }} = 'country'"
       - name: bop_extra_eu_exports_share
-        description: "Share of exports to non-EU countries of total exports to countries. Both numerator and denominator are restricted to partner__partner_type = 'country' so the populations match (aggregate rows such as EXT_EU27_2020 and WRL_REST overlap the countries they contain). Implemented as derived (aliased inputs) rather than ratio — see bop_ict_exports_share."
+        description: "Share of exports going outside the EU, over country-level partner rows."
         label: "Extra-EU share of exports"
         type: derived
         expr: extra_eu_exports / nullif(total_country_exports, 0)
         input_metrics:
-          - name: bop_exports_eur
+          - name: bop_exports_eur_by_partner
             alias: extra_eu_exports
             filter: "{{ Dimension('partner__is_eu_member') }} = false"
-          - name: bop_exports_eur
+          - name: bop_exports_eur_by_partner
             alias: total_country_exports
       # ---------------------------------------------------------------------
-      # EU27 aggregate-row variant. Eurostat ships EU27_2020 as a pre-computed
-      # row alongside the 27 member rows. The base metric excludes it (one
-      # reporter level only), so this variant reads it directly: geo =
-      # 'EU27_2020' with WRL_REST as the partner.
+      # EU27 aggregate-row variant: Eurostat ships EU27_2020 as a pre-computed
+      # row alongside the member rows. The base metric excludes it.
       # ---------------------------------------------------------------------
       - name: bop_exports_eur_eu27
-        description: "EU27 total exports to the world, read from the pre-computed EU27_2020 row with WRL_REST as partner. Counted once. Do not combine with bop_exports_eur, which sums the 27 member reporters instead and returns a smaller figure — member rows exclude unallocated and confidential value."
+        description: "EU27 total exports to the world, from the pre-computed EU27_2020 row. Do not combine with bop_exports_eur."
         label: "BOP exports (EUR, EU27 aggregate row)"
         type: simple
         agg: sum
@@ -259,7 +264,7 @@ models:
           type: categorical
           name: characteristic_code
       - name: characteristic_is_reporting_level
-        description: "TRUE for the single 'all characteristics' row of each characteristic type (size_class TOTAL, ebops_2010 S, enterprise_control TOTAL). The three types are independent partitions of the same population and each contains nested codes, so value metrics filter to this column."
+        description: "TRUE for the EBOPS-2010 service sections. The size_class and enterprise_control partitions are alternative cuts of the same population, so summing across them triple-counts."
         data_tests: [not_null]
         dimension:
           type: categorical
@@ -335,12 +340,12 @@ models:
               ]
     metrics:
       - name: stec_trade_value_eur
-        description: "Sum of observation values in EUR at the reporting grain. NULL means confidential/missing and is ignored by SUM — never coalesced to 0. Four filters are required: characteristic__is_reporting_level keeps only the EBOPS-2010 service sections (ext_stec01/02/03 are three independent views of the same population — size_class and enterprise_control are alternative cuts, so summing all three triple-counts); nace__is_reporting_level keeps only the NACE section rows (TOTAL, A_B, UNK ... overlap the sections); geo__is_eu_aggregate = false keeps one reporter level; partner__partner_type = 'country' keeps one partner level. Without the last two each euro is counted once per overlapping aggregate, over-counting ~4.9x."
+        description: "Sum of values in EUR at the reporting grain: EBOPS sections, NACE sections, one reporter, partner pinned to WRL_REST."
         label: "STEC trade value (EUR)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('stec_observation__characteristic_is_reporting_level') }} = true AND {{ Dimension('nace__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_type') }} = 'country'"
+        filter: "{{ Dimension('stec_observation__characteristic_is_reporting_level') }} = true AND {{ Dimension('nace__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_code') }} = 'WRL_REST'"
       - name: stec_observations
         label: "STEC observations"
         type: simple
@@ -353,19 +358,19 @@ models:
         agg: sum_boolean
         expr: is_value_missing
       - name: stec_exports_eur
-        description: "Exports in EUR at the reporting grain. See stec_trade_value_eur on why the four grain filters are required."
-        label: "Exports (EUR)"
+        description: "Exports in EUR from the STEC enterprise survey: each reporter's total to the world. Not interchangeable with bop_exports_eur — smaller reporter set."
+        label: "Exports by enterprise (EUR)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('flow__flow_direction') }} = 'exports' AND {{ Dimension('stec_observation__characteristic_is_reporting_level') }} = true AND {{ Dimension('nace__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_type') }} = 'country'"
+        filter: "{{ Dimension('flow__flow_direction') }} = 'exports' AND {{ Dimension('stec_observation__characteristic_is_reporting_level') }} = true AND {{ Dimension('nace__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_code') }} = 'WRL_REST'"
       - name: stec_imports_eur
-        description: "Imports in EUR at the reporting grain. See stec_trade_value_eur on why the four grain filters are required."
-        label: "Imports (EUR)"
+        description: "Imports in EUR as reported by the STEC enterprise survey: each reporter's total from the world."
+        label: "Imports by enterprise (EUR)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('flow__flow_direction') }} = 'imports' AND {{ Dimension('stec_observation__characteristic_is_reporting_level') }} = true AND {{ Dimension('nace__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_type') }} = 'country'"
+        filter: "{{ Dimension('flow__flow_direction') }} = 'imports' AND {{ Dimension('stec_observation__characteristic_is_reporting_level') }} = true AND {{ Dimension('nace__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_code') }} = 'WRL_REST'"
       - name: stec_net_balance_eur
         description: "Exports minus imports."
         label: "STEC net balance (EUR)"
@@ -388,7 +393,7 @@ models:
             alias: exports_prev_year
             offset_window: 1 year
       - name: stec_j_sector_exports_share
-        description: "Share of exports by enterprises in NACE section J (information & communication) of total exports. Implemented as derived (aliased inputs) rather than ratio — see bop_ict_exports_share."
+        description: "Share of exports by NACE section J enterprises (information & communication)."
         label: "NACE J share of exports"
         type: derived
         expr: j_sector_exports / nullif(total_exports, 0)
@@ -399,14 +404,11 @@ models:
           - name: stec_exports_eur
             alias: total_exports
       # ---------------------------------------------------------------------
-      # EU27 aggregate-row variant. Eurostat ships EU27_2020 as a pre-computed
-      # row alongside the member rows. The base metrics exclude it (one reporter
-      # level only), so this variant reads it directly: geo = 'EU27_2020' with
-      # WRL_REST as the partner. Use it for EU-level headline cards; use the
-      # base metrics for reporter comparisons and partner breakdowns.
+      # EU27 aggregate-row variant: Eurostat ships EU27_2020 as a pre-computed
+      # row alongside the member rows. The base metrics exclude it.
       # ---------------------------------------------------------------------
       - name: stec_exports_eur_eu27
-        description: "EU27 total exports to the world, read from the pre-computed EU27_2020 row with WRL_REST as partner. Counted once. Do not combine with stec_exports_eur, which sums the member reporters instead."
+        description: "EU27 total exports to the world, read from the pre-computed EU27_2020 row. Do not combine with stec_exports_eur, which sums the member reporters."
         label: "STEC exports (EUR, EU27 aggregate row)"
         type: simple
         agg: sum
