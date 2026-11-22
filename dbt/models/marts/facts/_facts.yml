@@ -98,13 +98,13 @@ models:
           arguments:
             combination_of_columns: [year, bop_item, flow_code, partner, geo]
     metrics:
-      - name: bop_trade_value_eur
-        description: "Sum of values in EUR at the reporting grain: BPM6 sections, one reporter, partner pinned to WRL_REST."
-        label: "BOP trade value (EUR)"
+      - name: bop_gross_services_trade_eur
+        description: "Exports plus imports in EUR at the reporting grain (BPM6 sections, one reporter, partner pinned to WRL_REST). Excludes the reported balance flow: BAL is already exports minus imports, so summing it in would double-count it."
+        label: "BOP gross services trade (EUR)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('service__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_code') }} = 'WRL_REST'"
+        filter: "{{ Dimension('flow__flow_direction') }} IN ('exports', 'imports') AND {{ Dimension('service__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_code') }} = 'WRL_REST'"
       - name: bop_observations
         label: "BOP observations"
         type: simple
@@ -339,13 +339,13 @@ models:
                 geo,
               ]
     metrics:
-      - name: stec_trade_value_eur
-        description: "Sum of values in EUR at the reporting grain: EBOPS sections, NACE sections, one reporter, partner pinned to WRL_REST."
-        label: "STEC trade value (EUR)"
+      - name: stec_gross_services_trade_eur
+        description: "Exports plus imports in EUR at the reporting grain (EBOPS sections, NACE sections, one reporter, partner pinned to WRL_REST). STEC has no balance flow, so this is a clean EXP+IMP sum."
+        label: "STEC gross services trade (EUR)"
         type: simple
         agg: sum
         expr: value_eur
-        filter: "{{ Dimension('stec_observation__characteristic_is_reporting_level') }} = true AND {{ Dimension('nace__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_code') }} = 'WRL_REST'"
+        filter: "{{ Dimension('flow__flow_direction') }} IN ('exports', 'imports') AND {{ Dimension('stec_observation__characteristic_is_reporting_level') }} = true AND {{ Dimension('nace__is_reporting_level') }} = true AND {{ Dimension('geo__is_eu_aggregate') }} = false AND {{ Dimension('partner__partner_code') }} = 'WRL_REST'"
       - name: stec_observations
         label: "STEC observations"
         type: simple

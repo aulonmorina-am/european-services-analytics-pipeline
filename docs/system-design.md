@@ -74,12 +74,12 @@ Every mart model carries an inline `semantic_model` block (dbt v1.12+ spec) in
 `dbt/models/marts/**/_*.yml`. Entities join facts to dims; `year_start` (Jan 1) on
 `dim_year` is both the time dimension and the MetricFlow time spine.
 
-The two facts carry 21 metrics: trade value, observation and missing-observation
+The two facts carry 21 metrics: gross trade, observation and missing-observation
 counts; exports/imports/balance (via `flow__flow_direction`); derived net balance
 and YoY growth (`offset_window: 1 year`); three share metrics; a partner breakdown;
 and two EU27 aggregate-row variants.
 
-Four rules govern every value metric. They are all baked into the metric
+Five rules govern every value metric. They are all baked into the metric
 definitions, never left to BI:
 
 | Rule                                                          | Why                                                                                                                                                                                                                                                                              |
@@ -87,6 +87,7 @@ definitions, never left to BI:
 | `*__is_reporting_level` flags (service, NACE, characteristic) | Each dimension nests totals over their members. `SOX` sits beside the 13 BPM6 sections; `TOTAL`/`A_B`/`UNK` beside the NACE sections; the STEC `size_class` and `enterprise_control` partitions are alternative cuts of the same population. Summing across a level over-counts. |
 | `geo__is_eu_aggregate = false`                                | `EU27_2020` is a pre-computed row that overlaps the member rows.                                                                                                                                                                                                                 |
 | `partner__partner_code = 'WRL_REST'`                          | `WRL_REST`, `EXT_EU27_2020`, `EU27_2020` and the regional aggregates all overlap.                                                                                                                                                                                                |
+| A `flow__flow_direction` filter                               | The fact stores CRE, DEB and BAL as separate rows. A metric without a flow filter sums all three: the balance is already exports minus imports, so it is counted twice and two opposite directions are added.                                                                      |
 | NULL `value_eur`                                              | Marks confidential/missing. SUM skips it; never coalesce to 0.                                                                                                                                                                                                                   |
 
 The flags are **declared in the seeds**, not inferred from position. `SOX` is a
