@@ -1,0 +1,48 @@
+table DIM_GEO
+	lineageTag: aad27f32-814b-4f4b-9a98-fa2382e69496
+
+	column GEO
+		dataType: string
+		lineageTag: 440e4063-8ae8-4c36-8c2b-a2f84ee917e9
+		summarizeBy: none
+		sourceColumn: GEO
+
+		annotation SummarizationSetBy = Automatic
+
+	column GEO_LABEL
+		dataType: string
+		lineageTag: 8ef96b7f-4fab-4851-94fe-6d5b0b0e7ab2
+		summarizeBy: none
+		sourceColumn: GEO_LABEL
+
+		annotation SummarizationSetBy = Automatic
+
+	column IS_EU_AGGREGATE
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 34fbcbe0-9fbf-460b-a226-d63b5e9f47d1
+		summarizeBy: none
+		sourceColumn: IS_EU_AGGREGATE
+
+		annotation SummarizationSetBy = Automatic
+
+	column IS_EU_MEMBER
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: e2dbe6cb-0006-44b2-aebb-a1841e746359
+		summarizeBy: none
+		sourceColumn: IS_EU_MEMBER
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DIM_GEO = m
+		mode: import
+		source =
+				let
+				  Source = Snowflake.Databases("MPEYKDR-SH76564", "ANALYTICS_WH", [Implementation = "2.0"]),
+				  #"Navigation 1" = Source{[Name = "EUROPEAN_SERVICES_ANALYTICS", Kind = "Database"]}[Data],
+				  #"Navigation 2" = #"Navigation 1"{[Name = "MARTS", Kind = "Schema"]}[Data],
+				  #"Navigation 3" = #"Navigation 2"{[Name = "DIM_GEO", Kind = "Table"]}[Data]
+				in
+				  #"Navigation 3"
+

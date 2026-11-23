@@ -1,0 +1,62 @@
+table DIM_PARTNER
+	lineageTag: e90891b8-db12-4277-b608-be6d0a297c7a
+
+	column PARTNER
+		dataType: string
+		lineageTag: 1ef50384-245e-42c0-8530-85e465793ed7
+		summarizeBy: none
+		sourceColumn: PARTNER
+
+		annotation SummarizationSetBy = Automatic
+
+	column PARTNER_LABEL
+		dataType: string
+		lineageTag: 1a1d192c-0316-4df2-a92c-8e71a789bfc0
+		summarizeBy: none
+		sourceColumn: PARTNER_LABEL
+
+		annotation SummarizationSetBy = Automatic
+
+	column PARTNER_TYPE
+		dataType: string
+		lineageTag: 7a8fc400-16b5-43a7-a5af-5a41f7e915e9
+		summarizeBy: none
+		sourceColumn: PARTNER_TYPE
+
+		annotation SummarizationSetBy = Automatic
+
+	column IS_EU_MEMBER
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 4cec294a-dd46-4fb1-9cb2-fc0d6c2b94c6
+		summarizeBy: none
+		sourceColumn: IS_EU_MEMBER
+
+		annotation SummarizationSetBy = Automatic
+
+	column IS_EXTRA_EU_AGGREGATE
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 67f5ef86-db90-4f0d-bb12-987fc8a7d793
+		summarizeBy: none
+		sourceColumn: IS_EXTRA_EU_AGGREGATE
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Partner Group' = IF ( DIM_PARTNER[IS_EU_MEMBER], "EU partner", "Non-EU partner" )
+		lineageTag: 2153e951-2414-4b9f-b246-45244ab454d7
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DIM_PARTNER = m
+		mode: import
+		source =
+				let
+				  Source = Snowflake.Databases("MPEYKDR-SH76564", "ANALYTICS_WH", [Implementation = "2.0"]),
+				  #"Navigation 1" = Source{[Name = "EUROPEAN_SERVICES_ANALYTICS", Kind = "Database"]}[Data],
+				  #"Navigation 2" = #"Navigation 1"{[Name = "MARTS", Kind = "Schema"]}[Data],
+				  #"Navigation 3" = #"Navigation 2"{[Name = "DIM_PARTNER", Kind = "Table"]}[Data]
+				in
+				  #"Navigation 3"
+

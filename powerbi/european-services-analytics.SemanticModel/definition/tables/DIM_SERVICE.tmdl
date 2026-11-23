@@ -1,0 +1,66 @@
+table DIM_SERVICE
+	lineageTag: a6a28971-c36b-4021-811e-2828463a9564
+
+	column BOP_ITEM
+		dataType: string
+		lineageTag: 50d6a7d9-fc7c-437c-ad1a-e814c5d1923f
+		summarizeBy: none
+		sourceColumn: BOP_ITEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column BOP_ITEM_LABEL
+		dataType: string
+		lineageTag: 81573d6a-bea3-49f9-a6fc-b85a68a4d78d
+		summarizeBy: none
+		sourceColumn: BOP_ITEM_LABEL
+
+		annotation SummarizationSetBy = Automatic
+
+	column PARENT_BOP_ITEM
+		dataType: string
+		lineageTag: b1ceeb4f-b2d2-424c-88ac-d52585345fc2
+		summarizeBy: none
+		sourceColumn: PARENT_BOP_ITEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column SERVICE_LEVEL
+		dataType: double
+		lineageTag: 77cc6bfc-185d-4182-b738-da86c9f4fabb
+		summarizeBy: none
+		sourceColumn: SERVICE_LEVEL
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column IS_ICT_SERVICE
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 1e7690cf-d30d-440f-bbd2-678c1740b066
+		summarizeBy: none
+		sourceColumn: IS_ICT_SERVICE
+
+		annotation SummarizationSetBy = Automatic
+
+	column IS_REPORTING_LEVEL
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 67b954ff-b632-4d1d-85f3-370b47232734
+		summarizeBy: none
+		sourceColumn: IS_REPORTING_LEVEL
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DIM_SERVICE = m
+		mode: import
+		source =
+				let
+				  Source = Snowflake.Databases("MPEYKDR-SH76564", "ANALYTICS_WH", [Implementation = "2.0"]),
+				  #"Navigation 1" = Source{[Name = "EUROPEAN_SERVICES_ANALYTICS", Kind = "Database"]}[Data],
+				  #"Navigation 2" = #"Navigation 1"{[Name = "MARTS", Kind = "Schema"]}[Data],
+				  #"Navigation 3" = #"Navigation 2"{[Name = "DIM_SERVICE", Kind = "Table"]}[Data]
+				in
+				  #"Navigation 3"
+

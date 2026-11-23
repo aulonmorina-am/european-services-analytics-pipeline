@@ -60,13 +60,15 @@ RAW → STAGING → INTERMEDIATE → MARTS
 
 - **RAW:** Source data ingested through Fivetran.
 - **STAGING:** Source-level transformations.
-- **MARTS:** Analytical datasets for BI consumption. Star schema: `dim_year` (doubles
-  as the MetricFlow time spine via `year_start`),
-  `dim_service` (BPM6 hierarchy + ICT flag), `dim_partner`, `dim_geo`, `dim_flow`,
-  `dim_nace_activity`, `dim_enterprise_characteristic`, fed by
-  `fct_bop_services_trade` (year × service × flow × partner × geo) and
-  `fct_stec_services_trade` (year × characteristic × NACE × flow × partner × geo).
-  Facts are long-grain, values in EUR.
+- **MARTS:** Analytical datasets for BI consumption. Galaxy schema (fact
+  constellation): two facts — `fct_bop_services_trade` (year × service × flow ×
+  partner × geo) and `fct_stec_services_trade` (year × characteristic × NACE ×
+  flow × partner × geo) — sharing four conformed dimensions (`dim_year`, which
+  doubles as the MetricFlow time spine via `year_start`, `dim_flow`, `dim_partner`,
+  `dim_geo`) plus three fact-specific ones (`dim_service` with the BPM6 hierarchy
+  and ICT flag, `dim_nace_activity`, `dim_enterprise_characteristic`). Facts are
+  long-grain, values in EUR. The shared dimensions are what make the two datasets
+  comparable; the separate ones are why their measures cannot be added together.
 
 ### Semantic layer (dbt Semantic Layer / MetricFlow)
 

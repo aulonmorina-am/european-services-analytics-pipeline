@@ -1,0 +1,46 @@
+table DIM_FLOW
+	lineageTag: bf9f24fa-b5b9-4381-9050-120e61cba234
+
+	column FLOW_GROUP
+		dataType: string
+		lineageTag: 247433f2-1d0c-405c-82f6-7e100a6f4796
+		summarizeBy: none
+		sourceColumn: FLOW_GROUP
+
+		annotation SummarizationSetBy = Automatic
+
+	column FLOW_CODE
+		dataType: string
+		lineageTag: ce344d0c-4ef6-498a-88c5-d2999f4d8993
+		summarizeBy: none
+		sourceColumn: FLOW_CODE
+
+		annotation SummarizationSetBy = Automatic
+
+	column FLOW_LABEL
+		dataType: string
+		lineageTag: d4bf599a-e134-4d36-b169-bd16b7fb9fe2
+		summarizeBy: none
+		sourceColumn: FLOW_LABEL
+
+		annotation SummarizationSetBy = Automatic
+
+	column FLOW_DIRECTION
+		dataType: string
+		lineageTag: d34a2946-df02-453e-90ad-b517ade214a6
+		summarizeBy: none
+		sourceColumn: FLOW_DIRECTION
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DIM_FLOW = m
+		mode: import
+		source =
+				let
+				  Source = Snowflake.Databases("MPEYKDR-SH76564", "ANALYTICS_WH", [Implementation = "2.0"]),
+				  #"Navigation 1" = Source{[Name = "EUROPEAN_SERVICES_ANALYTICS", Kind = "Database"]}[Data],
+				  #"Navigation 2" = #"Navigation 1"{[Name = "MARTS", Kind = "Schema"]}[Data],
+				  #"Navigation 3" = #"Navigation 2"{[Name = "DIM_FLOW", Kind = "Table"]}[Data]
+				in
+				  #"Navigation 3"
+

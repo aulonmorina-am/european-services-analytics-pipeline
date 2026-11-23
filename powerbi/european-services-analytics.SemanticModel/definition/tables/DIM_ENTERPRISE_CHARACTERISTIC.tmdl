@@ -1,0 +1,55 @@
+table DIM_ENTERPRISE_CHARACTERISTIC
+	lineageTag: 2d804469-bfe4-4583-ab32-d51d40f636bd
+
+	column CHARACTERISTIC_KEY
+		dataType: string
+		lineageTag: 204718e2-00cc-44c3-bea2-fead2060f400
+		summarizeBy: none
+		sourceColumn: CHARACTERISTIC_KEY
+
+		annotation SummarizationSetBy = Automatic
+
+	column CHARACTERISTIC_TYPE
+		dataType: string
+		lineageTag: d1edd272-cee0-413a-b2ab-5af99fe6a419
+		summarizeBy: none
+		sourceColumn: CHARACTERISTIC_TYPE
+
+		annotation SummarizationSetBy = Automatic
+
+	column CHARACTERISTIC_CODE
+		dataType: string
+		lineageTag: fb913306-51f2-4ff7-984c-1f338e910f59
+		summarizeBy: none
+		sourceColumn: CHARACTERISTIC_CODE
+
+		annotation SummarizationSetBy = Automatic
+
+	column CHARACTERISTIC_LABEL
+		dataType: string
+		lineageTag: e985f3b8-2369-4ff8-820a-d4a24e963652
+		summarizeBy: none
+		sourceColumn: CHARACTERISTIC_LABEL
+
+		annotation SummarizationSetBy = Automatic
+
+	column IS_REPORTING_LEVEL
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: c4ec8ec6-de2c-408d-8ffd-73aafbc5f3de
+		summarizeBy: none
+		sourceColumn: IS_REPORTING_LEVEL
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DIM_ENTERPRISE_CHARACTERISTIC = m
+		mode: import
+		source =
+				let
+				  Source = Snowflake.Databases("MPEYKDR-SH76564", "ANALYTICS_WH", [Implementation = "2.0"]),
+				  #"Navigation 1" = Source{[Name = "EUROPEAN_SERVICES_ANALYTICS", Kind = "Database"]}[Data],
+				  #"Navigation 2" = #"Navigation 1"{[Name = "MARTS", Kind = "Schema"]}[Data],
+				  #"Navigation 3" = #"Navigation 2"{[Name = "DIM_ENTERPRISE_CHARACTERISTIC", Kind = "Table"]}[Data]
+				in
+				  #"Navigation 3"
+

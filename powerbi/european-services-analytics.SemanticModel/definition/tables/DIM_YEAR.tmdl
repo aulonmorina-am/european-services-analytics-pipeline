@@ -1,0 +1,49 @@
+table DIM_YEAR
+	lineageTag: c56123fd-355e-47bb-95bd-e60a64e770e7
+
+	column YEAR
+		dataType: double
+		lineageTag: cb09f23a-a868-48e1-89b6-2a7e2602ce21
+		summarizeBy: none
+		sourceColumn: YEAR
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column YEAR_START
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 59cfcea6-f719-4e7a-a2f3-b907ff7b0ad8
+		summarizeBy: none
+		sourceColumn: YEAR_START
+
+		variation Variation
+			isDefault
+			relationship: b31edb16-1404-484a-ac8f-8f0d49ca1897
+			defaultHierarchy: LocalDateTable_8d3825f6-478a-4f4a-a7b8-37df4982af7d.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column IS_LATEST_YEAR
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: d7698a70-64d1-4272-8d16-a6920dbcbbeb
+		summarizeBy: none
+		sourceColumn: IS_LATEST_YEAR
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DIM_YEAR = m
+		mode: import
+		source =
+				let
+				  Source = Snowflake.Databases("MPEYKDR-SH76564", "ANALYTICS_WH", [Implementation = "2.0"]),
+				  #"Navigation 1" = Source{[Name = "EUROPEAN_SERVICES_ANALYTICS", Kind = "Database"]}[Data],
+				  #"Navigation 2" = #"Navigation 1"{[Name = "MARTS", Kind = "Schema"]}[Data],
+				  #"Navigation 3" = #"Navigation 2"{[Name = "DIM_YEAR", Kind = "Table"]}[Data]
+				in
+				  #"Navigation 3"
+

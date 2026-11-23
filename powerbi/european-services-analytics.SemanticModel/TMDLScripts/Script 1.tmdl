@@ -1,0 +1,533 @@
+createOrReplace
+
+	ref table _MEASURES
+
+		measure 'Gross Services Trade' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] IN { "exports", "imports" },
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: Trade
+			lineageTag: 714d6696-230a-4db0-9882-c27718972658
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Services Exports' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "exports",
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: Trade
+			lineageTag: 314a6fd0-beb2-4f92-a7c6-1e165eb9b606
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Services Imports' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "imports",
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: Trade
+			lineageTag: ee0b763e-e2d0-4570-9c9e-ca9622ab0d20
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Reported Trade Balance' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "balance",
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: Trade
+			lineageTag: 3b7a02a9-e483-48fa-8da9-cde92bc9a98a
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Calculated Net Trade Balance' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "exports",
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+				- CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "imports",
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: Trade
+			lineageTag: ae7fc510-d5e9-4c31-8e4c-a9f2e1e7585a
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Exports by Partner Country' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "exports",
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER_TYPE] = "country"
+				)
+			```
+			displayFolder: Trade
+			lineageTag: f6e14cef-1ba6-4461-98d2-a9a34f77d576
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Services Exports (EU Members)' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "exports",
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_GEO[IS_EU_MEMBER] = TRUE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: Trade
+			lineageTag: e080913a-7d5e-4c6d-afaf-d38d81f98a26
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Services Exports (Non-EU Reporters)' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "exports",
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_GEO[IS_EU_MEMBER] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: Trade
+			lineageTag: 53844c34-48dc-4390-bfe4-c957894254f3
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Export Growth (YoY)' = ```
+				VAR CurrentExports =
+				    CALCULATE (
+				        SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				        DIM_FLOW[FLOW_DIRECTION] = "exports",
+				        DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				        DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				        DIM_PARTNER[PARTNER] = "WRL_REST"
+				    )
+				VAR PreviousValue =
+				    CALCULATE (
+				        SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				        DIM_FLOW[FLOW_DIRECTION] = "exports",
+				        DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				        DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				        DIM_PARTNER[PARTNER] = "WRL_REST",
+				        DATEADD ( DIM_YEAR[YEAR_START], -1, YEAR )
+				    )
+				RETURN
+				    DIVIDE ( CurrentExports - PreviousValue, PreviousValue )
+			```
+			displayFolder: Trade
+			lineageTag: 48bf97b3-e841-4729-ba98-d93a13763212
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'ICT Share of Services Exports' = ```
+				VAR TotalExports =
+				    CALCULATE (
+				        SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				        DIM_FLOW[FLOW_DIRECTION] = "exports",
+				        DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				        DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				        DIM_PARTNER[PARTNER] = "WRL_REST",
+				        REMOVEFILTERS ( DIM_SERVICE[IS_ICT_SERVICE] )
+				    )
+				VAR ICTExports =
+				    CALCULATE (
+				        SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				        DIM_FLOW[FLOW_DIRECTION] = "exports",
+				        DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				        DIM_SERVICE[IS_ICT_SERVICE] = TRUE (),
+				        DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				        DIM_PARTNER[PARTNER] = "WRL_REST"
+				    )
+				RETURN
+				    DIVIDE ( ICTExports, TotalExports )
+			```
+			displayFolder: Trade
+			lineageTag: dd47b2b6-aa1b-44ec-bf21-ae46ef4bab7e
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Extra-EU Partner Share' = ```
+				VAR ExtraEUExports =
+				    CALCULATE (
+				        SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				        DIM_FLOW[FLOW_DIRECTION] = "exports",
+				        DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				        DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				        DIM_PARTNER[PARTNER_TYPE] = "country",
+				        DIM_PARTNER[IS_EU_MEMBER] = FALSE ()
+				    )
+				VAR TotalCountryExports =
+				    CALCULATE (
+				        SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				        DIM_FLOW[FLOW_DIRECTION] = "exports",
+				        DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				        DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				        DIM_PARTNER[PARTNER_TYPE] = "country"
+				    )
+				RETURN
+				    DIVIDE ( ExtraEUExports, TotalCountryExports )
+			```
+			displayFolder: Trade
+			lineageTag: f505f039-dcb4-4167-87fb-97fb8340f376
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Total Observations' = COUNT ( FCT_BOP_SERVICES_TRADE[OBSERVATION_KEY] )
+			formatString: 0
+			displayFolder: Trade
+			lineageTag: 6907ff52-6585-4bc1-a836-296e46410f1e
+
+		measure 'Missing Observations' = ```
+				CALCULATE (
+				    COUNTROWS ( FCT_BOP_SERVICES_TRADE ),
+				    FCT_BOP_SERVICES_TRADE[IS_VALUE_MISSING] = TRUE ()
+				)
+			```
+			formatString: 0
+			displayFolder: Trade
+			lineageTag: 737dbef5-0120-482e-a096-cc849229c006
+
+		measure 'ICT Total' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "exports",
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_SERVICE[IS_ICT_SERVICE] = TRUE (),
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: ICT
+			lineageTag: 476f8a92-1084-4412-a9a6-699ef1c23601
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'ICT Telecom Exports' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "exports",
+				    DIM_SERVICE[BOP_ITEM] = "SI1",
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: ICT
+			lineageTag: 75f6abe8-8563-45fc-b3d0-8436ea7d4626
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'ICT Computer Exports' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "exports",
+				    DIM_SERVICE[BOP_ITEM] = "SI2",
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: ICT
+			lineageTag: f2067b6e-af13-4434-8822-63bdc9b8a746
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'ICT Information Exports' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "exports",
+				    DIM_SERVICE[BOP_ITEM] = "SI3",
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: ICT
+			lineageTag: d027a484-c523-471c-8108-10698654b77e
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'ICT Category Share' = ```
+				VAR TotalICT =
+				    CALCULATE (
+				        SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				        DIM_FLOW[FLOW_DIRECTION] = "exports",
+				        DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				        DIM_SERVICE[IS_ICT_SERVICE] = TRUE (),
+				        DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				        DIM_PARTNER[PARTNER] = "WRL_REST"
+				    )
+				VAR ThisCategory =
+				    CALCULATE (
+				        SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				        DIM_FLOW[FLOW_DIRECTION] = "exports",
+				        DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				        DIM_PARTNER[PARTNER] = "WRL_REST",
+				        KEEPFILTERS ( DIM_SERVICE[BOP_ITEM] IN { "SI1", "SI2", "SI3" } )
+				    )
+				RETURN
+				    DIVIDE ( ThisCategory, TotalICT )
+			```
+			displayFolder: ICT
+			lineageTag: c7b0d2da-50f4-49de-9c3e-05b749c4e9fa
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'EU27 Services Exports' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "exports",
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[GEO] = "EU27_2020",
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: EU27
+			lineageTag: 98865802-9e71-4b13-9c4e-c6e107e84779
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'EU27 Services Imports' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "imports",
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[GEO] = "EU27_2020",
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: EU27
+			lineageTag: a62fc691-9a6d-4731-ac51-173be7c0da3a
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'EU27 Calculated Net Trade Balance' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "exports",
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[GEO] = "EU27_2020",
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+				- CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "imports",
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[GEO] = "EU27_2020",
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: EU27
+			lineageTag: 4cbb0619-7727-45f7-92cd-24191415ea2e
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'EU27 Gross Services Trade' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] IN { "exports", "imports" },
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[GEO] = "EU27_2020",
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: EU27
+			lineageTag: 28620420-c68f-4874-862a-7d656a9bcdf6
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'EU27 Exports by Partner Country' = ```
+				CALCULATE (
+				    SUM ( FCT_BOP_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "exports",
+				    DIM_SERVICE[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[GEO] = "EU27_2020",
+				    DIM_PARTNER[PARTNER_TYPE] = "country"
+				)
+			```
+			displayFolder: EU27
+			lineageTag: d1bbb651-458d-43c6-8211-ebcfa69783c5
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Enterprise Gross Services Trade' = ```
+				CALCULATE (
+				    SUM ( FCT_STEC_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] IN { "exports", "imports" },
+				    DIM_ENTERPRISE_CHARACTERISTIC[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_NACE_ACTIVITY[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: Enterprise
+			lineageTag: 00f11eb3-e5b4-4e9b-91ec-94073f725ff3
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Enterprise Services Exports' = ```
+				CALCULATE (
+				    SUM ( FCT_STEC_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "exports",
+				    DIM_ENTERPRISE_CHARACTERISTIC[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_NACE_ACTIVITY[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: Enterprise
+			lineageTag: 5d14b34b-3421-43b1-a84a-4dc4b3896c34
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Enterprise Services Imports' = ```
+				CALCULATE (
+				    SUM ( FCT_STEC_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "imports",
+				    DIM_ENTERPRISE_CHARACTERISTIC[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_NACE_ACTIVITY[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: Enterprise
+			lineageTag: 9b89139f-eb72-4ce7-9ca3-8960e961ec0a
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Enterprise Calculated Net Trade Balance' = ```
+				CALCULATE (
+				    SUM ( FCT_STEC_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "exports",
+				    DIM_ENTERPRISE_CHARACTERISTIC[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_NACE_ACTIVITY[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+				- CALCULATE (
+				    SUM ( FCT_STEC_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "imports",
+				    DIM_ENTERPRISE_CHARACTERISTIC[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_NACE_ACTIVITY[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: Enterprise
+			lineageTag: 17777a59-a82c-43ac-ab44-6053a5b8bfb0
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Enterprise Export Growth (YoY)' = ```
+				VAR CurrentExports =
+				    CALCULATE (
+				        SUM ( FCT_STEC_SERVICES_TRADE[VALUE_EUR] ),
+				        DIM_FLOW[FLOW_DIRECTION] = "exports",
+				        DIM_ENTERPRISE_CHARACTERISTIC[IS_REPORTING_LEVEL] = TRUE (),
+				        DIM_NACE_ACTIVITY[IS_REPORTING_LEVEL] = TRUE (),
+				        DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				        DIM_PARTNER[PARTNER] = "WRL_REST"
+				    )
+				VAR PreviousValue =
+				    CALCULATE (
+				        SUM ( FCT_STEC_SERVICES_TRADE[VALUE_EUR] ),
+				        DIM_FLOW[FLOW_DIRECTION] = "exports",
+				        DIM_ENTERPRISE_CHARACTERISTIC[IS_REPORTING_LEVEL] = TRUE (),
+				        DIM_NACE_ACTIVITY[IS_REPORTING_LEVEL] = TRUE (),
+				        DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				        DIM_PARTNER[PARTNER] = "WRL_REST",
+				        DATEADD ( DIM_YEAR[YEAR_START], -1, YEAR )
+				    )
+				RETURN
+				    DIVIDE ( CurrentExports - PreviousValue, PreviousValue )
+			```
+			displayFolder: Enterprise
+			lineageTag: c0a28de5-8a02-478c-a636-641f026dfb1b
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Enterprise NACE Section J Share' = ```
+				VAR TotalExports =
+				    CALCULATE (
+				        SUM ( FCT_STEC_SERVICES_TRADE[VALUE_EUR] ),
+				        DIM_FLOW[FLOW_DIRECTION] = "exports",
+				        DIM_ENTERPRISE_CHARACTERISTIC[IS_REPORTING_LEVEL] = TRUE (),
+				        DIM_NACE_ACTIVITY[IS_REPORTING_LEVEL] = TRUE (),
+				        DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				        DIM_PARTNER[PARTNER] = "WRL_REST",
+				        REMOVEFILTERS ( DIM_NACE_ACTIVITY )
+				    )
+				VAR NACEJExports =
+				    CALCULATE (
+				        SUM ( FCT_STEC_SERVICES_TRADE[VALUE_EUR] ),
+				        DIM_FLOW[FLOW_DIRECTION] = "exports",
+				        DIM_ENTERPRISE_CHARACTERISTIC[IS_REPORTING_LEVEL] = TRUE (),
+				        DIM_NACE_ACTIVITY[IS_REPORTING_LEVEL] = TRUE (),
+				        DIM_NACE_ACTIVITY[NACE_R_2] = "J",
+				        DIM_GEO[IS_EU_AGGREGATE] = FALSE (),
+				        DIM_PARTNER[PARTNER] = "WRL_REST"
+				    )
+				RETURN
+				    DIVIDE ( NACEJExports, TotalExports )
+			```
+			displayFolder: Enterprise
+			lineageTag: 331dbdce-b1c0-4881-8e04-efd8a4142067
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		measure 'Enterprise Total Observations' = COUNT ( FCT_STEC_SERVICES_TRADE[OBSERVATION_KEY] )
+			formatString: 0
+			displayFolder: Enterprise
+			lineageTag: a3ea6906-e5b4-4a96-987b-430380e6b85c
+
+		measure 'Enterprise Missing Observations' = ```
+				CALCULATE (
+				    COUNTROWS ( FCT_STEC_SERVICES_TRADE ),
+				    FCT_STEC_SERVICES_TRADE[IS_VALUE_MISSING] = TRUE ()
+				)
+			```
+			formatString: 0
+			displayFolder: Enterprise
+			lineageTag: ad5a66e8-f802-4ebf-834a-d0f40b922ea9
+
+		measure 'Enterprise EU27 Services Exports' = ```
+				CALCULATE (
+				    SUM ( FCT_STEC_SERVICES_TRADE[VALUE_EUR] ),
+				    DIM_FLOW[FLOW_DIRECTION] = "exports",
+				    DIM_ENTERPRISE_CHARACTERISTIC[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_NACE_ACTIVITY[IS_REPORTING_LEVEL] = TRUE (),
+				    DIM_GEO[GEO] = "EU27_2020",
+				    DIM_PARTNER[PARTNER] = "WRL_REST"
+				)
+			```
+			displayFolder: Enterprise EU27
+			lineageTag: b2c86341-5a78-439f-9457-10894d40152c
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}

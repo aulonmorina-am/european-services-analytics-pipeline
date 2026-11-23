@@ -1,0 +1,40 @@
+table DIM_NACE_ACTIVITY
+	lineageTag: 6111a58a-508c-441a-8ae0-bfac812c8cf9
+
+	column NACE_R_2
+		dataType: string
+		lineageTag: 68ec4a60-2835-4d35-b204-662665075271
+		summarizeBy: none
+		sourceColumn: NACE_R_2
+
+		annotation SummarizationSetBy = Automatic
+
+	column Industry
+		dataType: string
+		lineageTag: 92e05933-b065-4258-a5fa-facd28a2afe0
+		summarizeBy: none
+		sourceColumn: Industry
+
+		annotation SummarizationSetBy = Automatic
+
+	column IS_REPORTING_LEVEL
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: a3100dd2-c155-41e4-9f16-63decf5a74df
+		summarizeBy: none
+		sourceColumn: IS_REPORTING_LEVEL
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DIM_NACE_ACTIVITY = m
+		mode: import
+		source =
+				let
+				  Source = Snowflake.Databases("MPEYKDR-SH76564", "ANALYTICS_WH", [Implementation = "2.0"]),
+				  #"Navigation 1" = Source{[Name = "EUROPEAN_SERVICES_ANALYTICS", Kind = "Database"]}[Data],
+				  #"Navigation 2" = #"Navigation 1"{[Name = "MARTS", Kind = "Schema"]}[Data],
+				  #"Navigation 3" = #"Navigation 2"{[Name = "DIM_NACE_ACTIVITY", Kind = "Table"]}[Data],
+				    #"Renamed Columns" = Table.RenameColumns(#"Navigation 3",{{"NACE_R_2_LABEL", "Industry"}})
+				in
+				  #"Renamed Columns"
+

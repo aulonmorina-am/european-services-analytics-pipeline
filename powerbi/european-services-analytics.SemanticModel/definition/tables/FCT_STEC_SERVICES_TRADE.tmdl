@@ -1,0 +1,162 @@
+table FCT_STEC_SERVICES_TRADE
+	lineageTag: 07109f9e-a851-4d3e-b49c-0be71d9d2dbd
+
+	column OBSERVATION_KEY
+		dataType: string
+		lineageTag: 9394feb3-5b33-4804-8bb9-43f54a59cd99
+		summarizeBy: none
+		sourceColumn: OBSERVATION_KEY
+
+		annotation SummarizationSetBy = Automatic
+
+	column YEAR
+		dataType: double
+		lineageTag: 3853e50b-656e-4df6-9eb8-1c428ff07afd
+		summarizeBy: none
+		sourceColumn: YEAR
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column YEAR_START
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a515e8d6-fa8e-4863-8770-6b4d8d92e55d
+		summarizeBy: none
+		sourceColumn: YEAR_START
+
+		variation Variation
+			isDefault
+			relationship: 7a04116a-b535-4e6d-aa8f-f0995a6cdbd5
+			defaultHierarchy: LocalDateTable_79e22a0e-4b5d-4a1e-81ff-0627d2daf857.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column CHARACTERISTIC_KEY
+		dataType: string
+		lineageTag: 2c18da15-1f23-4814-9b65-1bd49e03fdbe
+		summarizeBy: none
+		sourceColumn: CHARACTERISTIC_KEY
+
+		annotation SummarizationSetBy = Automatic
+
+	column CHARACTERISTIC_TYPE
+		dataType: string
+		lineageTag: 1c41a68c-199b-44c1-9393-abf5d872bccd
+		summarizeBy: none
+		sourceColumn: CHARACTERISTIC_TYPE
+
+		annotation SummarizationSetBy = Automatic
+
+	column CHARACTERISTIC_CODE
+		dataType: string
+		lineageTag: 70195541-3b0f-42b5-a53b-1d8894cd71a5
+		summarizeBy: none
+		sourceColumn: CHARACTERISTIC_CODE
+
+		annotation SummarizationSetBy = Automatic
+
+	column CHARACTERISTIC_IS_REPORTING_LEVEL
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: ec9bb746-03ef-4bb0-8049-b5c652fdf419
+		summarizeBy: none
+		sourceColumn: CHARACTERISTIC_IS_REPORTING_LEVEL
+
+		annotation SummarizationSetBy = Automatic
+
+	column NACE_R_2
+		dataType: string
+		lineageTag: 430099aa-e5fa-42b4-94b0-49bb089c1320
+		summarizeBy: none
+		sourceColumn: NACE_R_2
+
+		annotation SummarizationSetBy = Automatic
+
+	column FLOW_CODE
+		dataType: string
+		lineageTag: 38197987-7dd0-4d89-b825-3d356f2813df
+		summarizeBy: none
+		sourceColumn: FLOW_CODE
+
+		annotation SummarizationSetBy = Automatic
+
+	column PARTNER
+		dataType: string
+		lineageTag: 1db93f9e-79d7-4474-96bd-ffb373b0f64a
+		summarizeBy: none
+		sourceColumn: PARTNER
+
+		annotation SummarizationSetBy = Automatic
+
+	column GEO
+		dataType: string
+		lineageTag: 36f2c88f-fbf1-4663-92bf-574b3ffa943e
+		summarizeBy: none
+		sourceColumn: GEO
+
+		annotation SummarizationSetBy = Automatic
+
+	column VALUE_EUR
+		dataType: double
+		lineageTag: ec0375ed-d95f-466c-8a49-a32a8c49c03c
+		summarizeBy: sum
+		sourceColumn: VALUE_EUR
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column IS_VALUE_MISSING
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: af57437b-6409-4237-992a-150aa53ec672
+		summarizeBy: none
+		sourceColumn: IS_VALUE_MISSING
+
+		annotation SummarizationSetBy = Automatic
+
+	column OBS_FLAG
+		dataType: string
+		lineageTag: 99762f8c-7306-4945-8272-4ff8d3871992
+		summarizeBy: none
+		sourceColumn: OBS_FLAG
+
+		annotation SummarizationSetBy = Automatic
+
+	column CONF_STATUS
+		dataType: string
+		lineageTag: 7142da39-eead-41f7-8821-2d2a68d11878
+		summarizeBy: none
+		sourceColumn: CONF_STATUS
+
+		annotation SummarizationSetBy = Automatic
+
+	column LAST_UPDATE
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 557cec7a-9f5b-4111-b854-d49fb933c091
+		summarizeBy: none
+		sourceColumn: LAST_UPDATE
+
+		variation Variation
+			isDefault
+			relationship: 65bbc57a-84f9-480d-a02b-87becbd77c0c
+			defaultHierarchy: LocalDateTable_453aa98e-2810-4255-b3e5-fe89c6a35ce3.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FCT_STEC_SERVICES_TRADE = m
+		mode: import
+		source =
+				let
+				  Source = Snowflake.Databases("MPEYKDR-SH76564", "ANALYTICS_WH", [Implementation = "2.0"]),
+				  #"Navigation 1" = Source{[Name = "EUROPEAN_SERVICES_ANALYTICS", Kind = "Database"]}[Data],
+				  #"Navigation 2" = #"Navigation 1"{[Name = "MARTS", Kind = "Schema"]}[Data],
+				  #"Navigation 3" = #"Navigation 2"{[Name = "FCT_STEC_SERVICES_TRADE", Kind = "Table"]}[Data]
+				in
+				  #"Navigation 3"
+

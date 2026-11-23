@@ -1,0 +1,34 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-150
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["DIM_ENTERPRISE_CHARACTERISTIC","DIM_FLOW","DIM_GEO","DIM_NACE_ACTIVITY","DIM_PARTNER","DIM_SERVICE","DIM_YEAR","FCT_BOP_SERVICES_TRADE","FCT_STEC_SERVICES_TRADE"]
+
+annotation PBI_ProTooling = ["TMDLView_Desktop","DevMode"]
+
+ref table DIM_ENTERPRISE_CHARACTERISTIC
+ref table DIM_FLOW
+ref table DIM_GEO
+ref table DIM_NACE_ACTIVITY
+ref table DIM_PARTNER
+ref table DIM_SERVICE
+ref table DIM_YEAR
+ref table DateTableTemplate_0c088a9c-8efd-46d3-8b03-900dbf7d35df
+ref table LocalDateTable_8d3825f6-478a-4f4a-a7b8-37df4982af7d
+ref table FCT_BOP_SERVICES_TRADE
+ref table LocalDateTable_9981c09f-7a33-47fc-a14c-a8ee347cb741
+ref table LocalDateTable_91665a65-f50d-44bc-8571-b51c5c7d19f5
+ref table FCT_STEC_SERVICES_TRADE
+ref table LocalDateTable_79e22a0e-4b5d-4a1e-81ff-0627d2daf857
+ref table LocalDateTable_453aa98e-2810-4255-b3e5-fe89c6a35ce3
+ref table _MEASURES
+
+ref cultureInfo en-US
+

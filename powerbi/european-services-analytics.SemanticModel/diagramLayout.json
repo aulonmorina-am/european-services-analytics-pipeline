@@ -1,0 +1,152 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 50.028824400444137,
+            "y": 638.60971704646818
+          },
+          "nodeIndex": "DIM_ENTERPRISE_CHARACTERISTIC",
+          "nodeLineageTag": "2d804469-bfe4-4583-ab32-d51d40f636bd",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 506.99309555452623,
+            "y": 773.56308127761224
+          },
+          "nodeIndex": "DIM_FLOW",
+          "nodeLineageTag": "bf9f24fa-b5b9-4381-9050-120e61cba234",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 808.84705012649692,
+            "y": 35.40127495251798
+          },
+          "nodeIndex": "DIM_GEO",
+          "nodeLineageTag": "aad27f32-814b-4f4b-9a98-fa2382e69496",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 45.77200055828331,
+            "y": 242.81466528721216
+          },
+          "nodeIndex": "DIM_NACE_ACTIVITY",
+          "nodeLineageTag": "6111a58a-508c-441a-8ae0-bfac812c8cf9",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 505.60135564778659,
+            "y": 24.314685394443188
+          },
+          "nodeIndex": "DIM_PARTNER",
+          "nodeLineageTag": "e90891b8-db12-4277-b608-be6d0a297c7a",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1262.9658203448885,
+            "y": 444.08187637387226
+          },
+          "nodeIndex": "DIM_SERVICE",
+          "nodeLineageTag": "a6a28971-c36b-4021-811e-2828463a9564",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 895.75013538005737,
+            "y": 794.863895042737
+          },
+          "nodeIndex": "DIM_YEAR",
+          "nodeLineageTag": "c56123fd-355e-47bb-95bd-e60a64e770e7",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 896.9094515253804,
+            "y": 359.27154328382562
+          },
+          "nodeIndex": "FCT_BOP_SERVICES_TRADE",
+          "nodeLineageTag": "66d9a293-b3b3-4446-a989-cc6966770912",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 337.08914031041468,
+            "y": 372.35355637299972
+          },
+          "nodeIndex": "FCT_STEC_SERVICES_TRADE",
+          "nodeLineageTag": "07109f9e-a851-4d3e-b49c-0be71d9d2dbd",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1800.3426964638556,
+            "y": 150.32957357752161
+          },
+          "nodeIndex": "_MEASURES",
+          "nodeLineageTag": "d8847cb7-3202-4c56-a348-e67b66ad7028",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 70.95554390096882,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

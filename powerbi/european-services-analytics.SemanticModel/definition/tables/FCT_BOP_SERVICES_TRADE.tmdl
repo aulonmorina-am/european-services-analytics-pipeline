@@ -1,0 +1,129 @@
+table FCT_BOP_SERVICES_TRADE
+	lineageTag: 66d9a293-b3b3-4446-a989-cc6966770912
+
+	column OBSERVATION_KEY
+		dataType: string
+		lineageTag: cd20a149-d969-45f5-822f-f0dda48e9bde
+		summarizeBy: none
+		sourceColumn: OBSERVATION_KEY
+
+		annotation SummarizationSetBy = Automatic
+
+	column YEAR
+		dataType: double
+		lineageTag: 6038e2e8-795b-419d-af78-85f7bce4b4c5
+		summarizeBy: none
+		sourceColumn: YEAR
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column YEAR_START
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 193fea09-d873-4a9c-b619-9b39b782602b
+		summarizeBy: none
+		sourceColumn: YEAR_START
+
+		variation Variation
+			isDefault
+			relationship: 767101df-0695-4f2a-8f0a-8006f6cf0541
+			defaultHierarchy: LocalDateTable_9981c09f-7a33-47fc-a14c-a8ee347cb741.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column BOP_ITEM
+		dataType: string
+		lineageTag: 28203b94-bfff-4052-8132-f6e25621fe22
+		summarizeBy: none
+		sourceColumn: BOP_ITEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column FLOW_CODE
+		dataType: string
+		lineageTag: 0e9a40dc-2c23-48cc-8fd2-a1526408ec74
+		summarizeBy: none
+		sourceColumn: FLOW_CODE
+
+		annotation SummarizationSetBy = Automatic
+
+	column PARTNER
+		dataType: string
+		lineageTag: 63899eaf-d90a-468d-ad36-650fa0fad668
+		summarizeBy: none
+		sourceColumn: PARTNER
+
+		annotation SummarizationSetBy = Automatic
+
+	column GEO
+		dataType: string
+		lineageTag: 718b3233-2387-4db7-9e4e-61538f8f01e0
+		summarizeBy: none
+		sourceColumn: GEO
+
+		annotation SummarizationSetBy = Automatic
+
+	column VALUE_EUR
+		dataType: double
+		lineageTag: baec3fa4-8e7a-4674-8044-bb518ed0486c
+		summarizeBy: sum
+		sourceColumn: VALUE_EUR
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column IS_VALUE_MISSING
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 2b395459-6b58-4190-ba77-49a4d76e967d
+		summarizeBy: none
+		sourceColumn: IS_VALUE_MISSING
+
+		annotation SummarizationSetBy = Automatic
+
+	column OBS_FLAG
+		dataType: string
+		lineageTag: 3b078d39-ccb5-4184-b118-6fae05f46aa9
+		summarizeBy: none
+		sourceColumn: OBS_FLAG
+
+		annotation SummarizationSetBy = Automatic
+
+	column CONF_STATUS
+		dataType: string
+		lineageTag: 2aabc812-f206-4bdf-953c-f33b89a3c087
+		summarizeBy: none
+		sourceColumn: CONF_STATUS
+
+		annotation SummarizationSetBy = Automatic
+
+	column LAST_UPDATE
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: eddcafe3-31ae-4b5b-b763-0f0f63489b9e
+		summarizeBy: none
+		sourceColumn: LAST_UPDATE
+
+		variation Variation
+			isDefault
+			relationship: 43c76081-fc43-4fb6-9b67-fcc42a107ba6
+			defaultHierarchy: LocalDateTable_91665a65-f50d-44bc-8571-b51c5c7d19f5.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FCT_BOP_SERVICES_TRADE = m
+		mode: import
+		source =
+				let
+				  Source = Snowflake.Databases("MPEYKDR-SH76564", "ANALYTICS_WH", [Implementation = "2.0"]),
+				  #"Navigation 1" = Source{[Name = "EUROPEAN_SERVICES_ANALYTICS", Kind = "Database"]}[Data],
+				  #"Navigation 2" = #"Navigation 1"{[Name = "MARTS", Kind = "Schema"]}[Data],
+				  #"Navigation 3" = #"Navigation 2"{[Name = "FCT_BOP_SERVICES_TRADE", Kind = "Table"]}[Data]
+				in
+				  #"Navigation 3"
+

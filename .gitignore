@@ -11,3 +11,6 @@ __pycache__/
 .dbt/
 .secrets/
 logs/
+**/.pbi/
+*.pbix
+*.pbix.backup

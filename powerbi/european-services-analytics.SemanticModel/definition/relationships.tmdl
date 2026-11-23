@@ -1,0 +1,69 @@
+relationship b31edb16-1404-484a-ac8f-8f0d49ca1897
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DIM_YEAR.YEAR_START
+	toColumn: LocalDateTable_8d3825f6-478a-4f4a-a7b8-37df4982af7d.Date
+
+relationship 767101df-0695-4f2a-8f0a-8006f6cf0541
+	joinOnDateBehavior: datePartOnly
+	fromColumn: FCT_BOP_SERVICES_TRADE.YEAR_START
+	toColumn: LocalDateTable_9981c09f-7a33-47fc-a14c-a8ee347cb741.Date
+
+relationship 43c76081-fc43-4fb6-9b67-fcc42a107ba6
+	joinOnDateBehavior: datePartOnly
+	fromColumn: FCT_BOP_SERVICES_TRADE.LAST_UPDATE
+	toColumn: LocalDateTable_91665a65-f50d-44bc-8571-b51c5c7d19f5.Date
+
+relationship 7a04116a-b535-4e6d-aa8f-f0995a6cdbd5
+	joinOnDateBehavior: datePartOnly
+	fromColumn: FCT_STEC_SERVICES_TRADE.YEAR_START
+	toColumn: LocalDateTable_79e22a0e-4b5d-4a1e-81ff-0627d2daf857.Date
+
+relationship 65bbc57a-84f9-480d-a02b-87becbd77c0c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: FCT_STEC_SERVICES_TRADE.LAST_UPDATE
+	toColumn: LocalDateTable_453aa98e-2810-4255-b3e5-fe89c6a35ce3.Date
+
+relationship AutoDetected_5bb1d19b-6bb5-494f-8fb8-b2e91dfa43bf
+	fromColumn: FCT_STEC_SERVICES_TRADE.CHARACTERISTIC_KEY
+	toColumn: DIM_ENTERPRISE_CHARACTERISTIC.CHARACTERISTIC_KEY
+
+relationship AutoDetected_2c27497c-2d67-4c26-b369-f9183925b5d6
+	fromColumn: FCT_BOP_SERVICES_TRADE.FLOW_CODE
+	toColumn: DIM_FLOW.FLOW_CODE
+
+relationship AutoDetected_9d158fd1-a6f2-4ba7-be53-a4fdec2809d8
+	fromColumn: FCT_STEC_SERVICES_TRADE.FLOW_CODE
+	toColumn: DIM_FLOW.FLOW_CODE
+
+relationship AutoDetected_57d8b24b-1bac-425f-ad72-7a55d0c0de96
+	fromColumn: FCT_BOP_SERVICES_TRADE.GEO
+	toColumn: DIM_GEO.GEO
+
+relationship AutoDetected_fad94f1e-3450-4a86-bf59-067d926ffde8
+	fromColumn: FCT_STEC_SERVICES_TRADE.GEO
+	toColumn: DIM_GEO.GEO
+
+relationship AutoDetected_c55753f9-e12d-48d0-b9f4-f50d194f7887
+	fromColumn: FCT_STEC_SERVICES_TRADE.NACE_R_2
+	toColumn: DIM_NACE_ACTIVITY.NACE_R_2
+
+relationship AutoDetected_5bca1b67-862b-4fc7-98a2-f336c08ba5bd
+	fromColumn: FCT_BOP_SERVICES_TRADE.PARTNER
+	toColumn: DIM_PARTNER.PARTNER
+
+relationship AutoDetected_4b82d020-e312-4f2a-bb9b-66833f9a373a
+	fromColumn: FCT_STEC_SERVICES_TRADE.PARTNER
+	toColumn: DIM_PARTNER.PARTNER
+
+relationship AutoDetected_b92ba7b9-1d26-4f83-8f8a-6b24f8eb5894
+	fromColumn: FCT_BOP_SERVICES_TRADE.BOP_ITEM
+	toColumn: DIM_SERVICE.BOP_ITEM
+
+relationship AutoDetected_e6d1b40a-ce91-424c-89c6-0084664d68b2
+	fromColumn: FCT_BOP_SERVICES_TRADE.YEAR
+	toColumn: DIM_YEAR.YEAR
+
+relationship AutoDetected_eb554544-a2c8-4447-adad-67de06831e05
+	fromColumn: FCT_STEC_SERVICES_TRADE.YEAR
+	toColumn: DIM_YEAR.YEAR
+
